@@ -31,10 +31,14 @@ contract FarmPools is FarmTokens {
 
     // modifiers
 
-    modifier canStake(address _user,address _token, uint256 _amount) {
+    modifier canStake(
+        address _user,
+        address _token,
+        uint256 _amount
+    ) {
         require(block.timestamp < _launchTime, 'Staking is locked');
         require(_poolsSet.contains(_token), 'non existe pool');
-        require(IERC20(_token).allowance(_user, address(this))>=_amount, 'not allowed');
+        require(IERC20(_token).allowance(_user, address(this)) >= _amount, 'not allowed');
 
         _;
     }
@@ -76,5 +80,4 @@ contract FarmPools is FarmTokens {
         _poolsSet.add(_token);
         _pools[_token] = poolDetails(_shareAPR, _shareAPRBase, _minimumStake, _cap, 0, _totalShare, _totalShareBase);
     }
-    
 }

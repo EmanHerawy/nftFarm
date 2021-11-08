@@ -19,19 +19,16 @@ contract StartfiFarm is UserPools {
 
     // user can redeem nft at any time as long as his balance of Rstfi >= the required price " points"
     // we should check if this nft has conditions to apply
-    function redeem(uint256 itemId) external {
-
-    }
+    function redeem(uint256 itemId) external {}
 
     // only after deadline
     function unstake(address _token) external {
-       require( _unstake(_msgSender(), _token),'Invalid unstake operation');
+        require(_unstake(_msgSender(), _token), 'Invalid unstake operation');
     }
 
     function unstakeBatch(address[] calldata _tokens) external {
-              for (uint256 index = 0; index < _tokens.length; index++) {
-               require( _unstake(_msgSender(), _tokens[index]),'Invalid unstake operation');
+        for (uint256 index = 0; index < _tokens.length; index++) {
+            require(_unstake(_msgSender(), _tokens[index]), 'Invalid unstake operation');
         }
-
     }
 }

@@ -30,7 +30,7 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         uint256 _tokenId,
         uint256 _priceInPoint,
         uint256 _minimumStakeRequired,
-        address _tokenLinked  
+        address _tokenLinked
     ) internal onlyOwner {
         require(
             _priceInPoint != 0 &&
@@ -64,14 +64,13 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         return true;
     }
 
-
-// TODO: add time check condition 
+    // TODO: add time check condition
     function _releaseNFT(uint256 key) internal returns (bool) {
         address nftAddress = rewardTokens[key].nftAddress;
         address _owner = rewardTokens[key].owner;
         uint256 tokenId = rewardTokens[key].tokenId;
         require(IERC721(nftAddress).ownerOf(tokenId) == address(this), 'UnAuthorized');
-        _transferNFT(nftAddress,tokenId,address(this), _owner );
+        _transferNFT(nftAddress, tokenId, address(this), _owner);
         return true;
     }
 }
