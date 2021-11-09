@@ -73,4 +73,21 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         _transferNFT(nftAddress, tokenId, address(this), _owner);
         return true;
     }
+
+    function _claimReward(uint256 key, address _user) internal virtual returns (bool) {
+        uint256 price = rewardTokens[key].priceInPoint;
+        require(balanceOf(_user) >= price, 'Insufficient fund');
+      // burn decrease the total supply which might be vulnarabity when we try to enforce cap 
+        _burn(_user, price);
+        address nftAddress = rewardTokens[key].nftAddress;
+        uint256 tokenId = rewardTokens[key].tokenId;
+        require(IERC721(nftAddress).ownerOf(tokenId) == address(this), 'UnAuthorized');
+        _transferNFT(nftAddress, tokenId, address(this), _user);
+        return true;
+    }
+
+    function _mint(address account, uint256 amount) internal virtual override {
+        require(ERC20.totalSupply() + amount <= _RstfiMaxSupply, 'cap exceeded');
+        super._mint(account, amount);
+    }
 }

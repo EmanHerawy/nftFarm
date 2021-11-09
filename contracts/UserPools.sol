@@ -102,5 +102,15 @@ contract UserPools is FarmPools {
         // emit event here
         userPools[_user][_token].lastRewardBlock = block.timestamp;
         _mint(_user, totalRewards);
+        return true;
+    }
+
+    function _claimReward(uint256 key, address _user) internal virtual override returns (bool) {
+        uint256 minimumStakeRequired = rewardTokens[key].minimumStakeRequired;
+        if (minimumStakeRequired > 0) {
+            require(minimumStakeRequired >= userPools[_user][rewardTokens[key].tokenLinked].amount);
+        }
+
+        return super._claimReward(key, _user);
     }
 }
