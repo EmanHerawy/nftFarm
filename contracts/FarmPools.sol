@@ -9,7 +9,7 @@ contract FarmPools is FarmTokens {
     using SafeDecimalMath for uint256;
 
     using EnumerableSet for EnumerableSet.AddressSet;
-    uint256 immutable private _farmDeadline;
+    uint256 private immutable _farmDeadline;
     uint256 immutable _launchTime;
     uint256 private _RstfiMaxSupply;
     uint256 private totalShares;
@@ -38,7 +38,7 @@ contract FarmPools is FarmTokens {
     ) {
         require(block.timestamp < _launchTime, 'Staking is locked');
         require(_poolsSet.contains(_token), 'non existe pool');
-        require(_amount>= _pools[_token].minimumStake, 'less than the minimum amount');
+        require(_amount >= _pools[_token].minimumStake, 'less than the minimum amount');
         require(IERC20(_token).allowance(_user, address(this)) >= _amount, 'not allowed');
 
         _;
@@ -57,9 +57,10 @@ contract FarmPools is FarmTokens {
         _launchTime = launchTime_;
     }
 
-function getFarmDeadline() view external returns (uint256) {
-    return _farmDeadline;
-}
+    function getFarmDeadline() external view returns (uint256) {
+        return _farmDeadline;
+    }
+
     /// @notice Only Owner can call it
 
     function _addPool(
@@ -88,9 +89,37 @@ function getFarmDeadline() view external returns (uint256) {
         _poolsSet.add(_token);
         _pools[_token] = poolDetails(_shareAPR, _shareAPRBase, _minimumStake, _cap, 0, _totalShare, _totalShareBase);
     }
-        function _releaseNFT(uint256 key) internal override onlyOwner returns (bool) {
-          require(_farmDeadline<block.timestamp,"Farm is running");
-           return super._releaseNFT( key);
-        }
 
+    function _releaseNFT(uint256 key) internal override onlyOwner returns (bool) {
+        require(_farmDeadline < block.timestamp, 'Farm is running');
+        return super._releaseNFT(key);
+    }
+
+    function getPoolByIndex(uint256 index) external view returns (address poolAddress) {
+        return _poolsSet.at(index);
+    }
+
+    function getPoolDetails(address _token)
+        external
+        view
+        returns (
+            uint256 _shareAPR,
+            uint256 _shareAPRBase,
+            uint256 _minimumStake,
+            uint256 _cap,
+            uint256 _totalShare,
+            uint256 _totalShareBase
+        )
+    {
+        _shareAPR = _pools[_token].shareAPR;
+        _shareAPRBase = _pools[_token].shareAPRBase;
+        _minimumStake = _pools[_token].minimumStake;
+        _cap = _pools[_token].cap;
+        _totalShare = _pools[_token].totalShare;
+        _totalShareBase = _pools[_token].totalShareBase;
+    }
+
+    function getPools() external view returns (address[] memory poolAddreses) {
+        return _poolsSet.values();
+    }
 }
