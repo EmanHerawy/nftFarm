@@ -10,7 +10,7 @@ contract FarmPools is FarmTokens {
 
     using EnumerableSet for EnumerableSet.AddressSet;
     uint256 private immutable _farmDeadline;
-    uint256 immutable _launchTime;
+    uint256  internal immutable _launchTime;
     uint256 private _RstfiMaxSupply;
     uint256 private totalShares;
 
@@ -57,8 +57,11 @@ contract FarmPools is FarmTokens {
         _launchTime = launchTime_;
     }
 
-    function getFarmDeadline() external view returns (uint256) {
+    function farmDeadline() external view returns (uint256) {
         return _farmDeadline;
+    }
+    function launchTime() external view returns (uint256) {
+        return _launchTime;
     }
 
     /// @notice Only Owner can call it
