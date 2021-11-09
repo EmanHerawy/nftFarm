@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
-    uint256 private _RstfiMaxSupply;
+    uint256 private _cap;
     uint256 private _tokenCount;
     struct tokenDetails {
         address nftAddress;
@@ -18,9 +18,16 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         uint256 minimumStakeRequired;
         address tokenLinked;
     }
-    mapping(uint256 => tokenDetails) rewardTokens;
+    mapping(uint256 => tokenDetails) internal rewardTokens;
 
     constructor() ERC20('Startfi Reward Token', 'RSTFI') {}
+
+function maxCap() view external returns (uint256) {
+    return _cap;
+}
+function totalRewards() view external returns (uint256) {
+    return _tokenCount;
+}
 
     /// @notice Only woner can call it
 
@@ -49,7 +56,7 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
             _minimumStakeRequired,
             _tokenLinked
         );
-        _RstfiMaxSupply += _priceInPoint;
+        _cap += _priceInPoint;
         _tokenCount++;
         _transferNFT(_nftAddress, _tokenId, _owner, address(this));
     }
@@ -87,7 +94,7 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
     }
 
     function _mint(address account, uint256 amount) internal virtual override {
-        require(ERC20.totalSupply() + amount <= _RstfiMaxSupply, 'cap exceeded');
+        require(ERC20.totalSupply() + amount <= _cap, 'cap exceeded');
         super._mint(account, amount);
     }
 }

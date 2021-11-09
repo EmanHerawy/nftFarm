@@ -9,7 +9,7 @@ contract FarmPools is FarmTokens {
     using SafeDecimalMath for uint256;
 
     using EnumerableSet for EnumerableSet.AddressSet;
-    uint256 immutable _farmDeadline;
+    uint256 immutable private _farmDeadline;
     uint256 immutable _launchTime;
     uint256 private _RstfiMaxSupply;
     uint256 private totalShares;
@@ -26,7 +26,7 @@ contract FarmPools is FarmTokens {
         uint256 totalShare;
         uint256 totalShareBase;
     }
-    EnumerableSet.AddressSet internal _poolsSet;
+    EnumerableSet.AddressSet private _poolsSet;
     mapping(address => poolDetails) internal _pools;
 
     // modifiers
@@ -38,6 +38,7 @@ contract FarmPools is FarmTokens {
     ) {
         require(block.timestamp < _launchTime, 'Staking is locked');
         require(_poolsSet.contains(_token), 'non existe pool');
+        require(_amount>= _pools[_token].minimumStake, 'less than the minimum amount');
         require(IERC20(_token).allowance(_user, address(this)) >= _amount, 'not allowed');
 
         _;
@@ -56,9 +57,12 @@ contract FarmPools is FarmTokens {
         _launchTime = launchTime_;
     }
 
+function getFarmDeadline() view external returns (uint256) {
+    return _farmDeadline;
+}
     /// @notice Only Owner can call it
 
-    function addPool(
+    function _addPool(
         address _token,
         uint256 _shareAPR,
         uint256 _shareAPRBase,
@@ -66,7 +70,7 @@ contract FarmPools is FarmTokens {
         uint256 _cap,
         uint256 _totalShare,
         uint256 _totalShareBase
-    ) external onlyOwner {
+    ) internal onlyOwner {
         totalShares = totalShares + (_totalShare.divideDecimal(_totalShareBase));
         // every toen should have a share of the total rstfi and the math for APR and amount token staked should match that share so that the APR doesn't exceed it
         require(totalShares / 1 ether <= 100, 'exceed cap');

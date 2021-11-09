@@ -16,13 +16,24 @@ contract UserPools is FarmPools {
         uint256 lastRewardBlock;
     }
     // user address to token address to stake details
-    mapping(address => mapping(address => userPool)) userPools;
-    mapping(address => EnumerableSet.AddressSet) internal _userToPools;
+    mapping(address => mapping(address => userPool)) private userPools;
+    mapping(address => EnumerableSet.AddressSet) private _userToPools;
 
     constructor(uint256 poolEndTime_, uint256 deadline_) FarmPools(poolEndTime_, deadline_) {}
 
-    function userPoolDetails(address user, address token)
-        public
+    function _calcReward(
+        uint256 amount,
+        uint256 shareAPR,
+        uint256 baseAPR,
+        uint256 rewardBlocks
+    ) private pure returns (uint256) {
+        // get the rate e.g. who much points for x amount stake in y pool
+        uint256 rate = amount.multiplyDecimalRound((shareAPR.divideDecimal(baseAPR * 100)));
+        // multiply in duration to get the reward now since the the staking time
+        return rate * rewardBlocks;
+    }
+    function _userPoolDetails(address user, address token)
+        internal
         view
         returns (
             uint256 amount,
@@ -37,7 +48,7 @@ contract UserPools is FarmPools {
         // (amount, stakeTime, lastRewardBlock) = userPools[user][token];
     }
 
-    function userRewards(address user) external view returns (uint256 totalRewards) {
+    function _userRewards(address user) internal view returns (uint256 totalRewards) {
         address[] memory _userPools = _userToPools[user].values();
         for (uint256 index = 0; index < _userPools.length; index++) {
             uint256 lastRewardBlock = userPools[user][_userPools[index]].lastRewardBlock;
@@ -52,19 +63,8 @@ contract UserPools is FarmPools {
         }
     }
 
-    function _calcReward(
-        uint256 amount,
-        uint256 shareAPR,
-        uint256 baseAPR,
-        uint256 rewardBlocks
-    ) public pure returns (uint256) {
-        // get the rate e.g. who much points for x amount stake in y pool
-        uint256 rate = amount.multiplyDecimalRound((shareAPR.divideDecimal(baseAPR * 100)));
-        // multiply in duration to get the reward now since the the staking time
-        return rate * rewardBlocks;
-    }
 
-    function getUserPools(address user) external view returns (address[] memory currentUserPools) {
+    function _getUserPools(address user) internal view returns (address[] memory currentUserPools) {
         return _userToPools[user].values();
     }
 

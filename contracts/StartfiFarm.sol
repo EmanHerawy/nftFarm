@@ -5,6 +5,23 @@ import './UserPools.sol';
 contract StartfiFarm is UserPools {
     constructor(uint256 launchTime_, uint256 deadline_) UserPools(launchTime_, deadline_) {}
 
+
+  function userRewards(address user) external view returns (uint256 totalRewards){
+      return _userRewards(user);
+  }
+
+    function getUserPools(address user) external view returns (address[] memory currentUserPools) {
+       return _getUserPools(user);
+    }
+        function userPoolDetails(address user, address token)
+        external
+        view
+        returns (
+            uint256 amount,
+            uint256 lastRewardBlock,
+            uint256 stakeTime
+        )
+    {return _userPoolDetails(user, token);}
     // ony before launch time
     function stake(address _token, uint256 _amount) external {
         require(_stake(_msgSender(), _token, _amount), 'Invalid stake operation');
@@ -61,5 +78,16 @@ contract StartfiFarm is UserPools {
         for (uint256 index = 0; index < _tokens.length; index++) {
             require(_unstake(_msgSender(), _tokens[index]), 'Invalid unstake operation');
         }
+    }
+      function addPool(
+        address _token,
+        uint256 _shareAPR,
+        uint256 _shareAPRBase,
+        uint256 _minimumStake,
+        uint256 _cap,
+        uint256 _totalShare,
+        uint256 _totalShareBase
+    ) external{
+        _addPool(_token, _shareAPR, _shareAPRBase, _minimumStake, _cap, _totalShare, _totalShareBase);
     }
 }
