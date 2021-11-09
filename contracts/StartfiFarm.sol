@@ -10,7 +10,7 @@ contract StartfiFarm is UserPools {
         require(_stake(_msgSender(), _token, _amount), 'Invalid stake operation');
     }
 
-// permit 
+    // permit
     function stakeBatch(address[] calldata _tokens, uint256[] calldata _amounts) external {
         require(_tokens.length == _amounts.length, 'Mismatch array length');
         for (uint256 index = 0; index < _tokens.length; index++) {
