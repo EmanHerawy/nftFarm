@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.7;
+pragma solidity 0.8.4;
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol';
@@ -8,6 +8,7 @@ import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
     uint256 private _cap;
+    uint256 private _mintedPoints;
     uint256 private _tokenCount;
     struct tokenDetails {
         address nftAddress;
@@ -22,10 +23,13 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
 
     constructor() ERC20('Startfi Reward Token', 'RSTFI') {}
 
+function mintedPoints() view external returns (uint256) {
+    return _mintedPoints;
+}
 function maxCap() view external returns (uint256) {
     return _cap;
 }
-function totalRewards() view external returns (uint256) {
+function rewardCount() view external returns (uint256) {
     return _tokenCount;
 }
 
@@ -72,7 +76,8 @@ function totalRewards() view external returns (uint256) {
     }
 
     // TODO: add time check condition
-    function _releaseNFT(uint256 key) internal returns (bool) {
+    function _releaseNFT(uint256 key) internal virtual returns (bool) {
+        require(ERC20.totalSupply()>=rewardTokens[key].priceInPoint,"Can not release, users can sell it");
         address nftAddress = rewardTokens[key].nftAddress;
         address _owner = rewardTokens[key].owner;
         uint256 tokenId = rewardTokens[key].tokenId;
@@ -94,7 +99,9 @@ function totalRewards() view external returns (uint256) {
     }
 
     function _mint(address account, uint256 amount) internal virtual override {
-        require(ERC20.totalSupply() + amount <= _cap, 'cap exceeded');
+        // require(ERC20.totalSupply() + amount <= _cap, 'cap exceeded');
+        require(_mintedPoints + amount <= _cap, 'cap exceeded');
+        _mintedPoints+=amount;
         super._mint(account, amount);
     }
 }

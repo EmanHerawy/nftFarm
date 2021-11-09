@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.7;
+pragma solidity 0.8.4;
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import './FarmTokens.sol';
@@ -84,8 +84,13 @@ function getFarmDeadline() view external returns (uint256) {
                 _token != address(0),
             'Zero values not allowed'
         );
-        require(!_poolsSet.contains(_token), 'Douplicate value is not allowed');
+        require(!_poolsSet.contains(_token), 'Duplicated value is not allowed');
         _poolsSet.add(_token);
         _pools[_token] = poolDetails(_shareAPR, _shareAPRBase, _minimumStake, _cap, 0, _totalShare, _totalShareBase);
     }
+        function _releaseNFT(uint256 key) internal override onlyOwner returns (bool) {
+          require(_farmDeadline<block.timestamp,"Farm is running");
+           return super._releaseNFT( key);
+        }
+
 }

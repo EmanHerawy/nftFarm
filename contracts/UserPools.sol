@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.7;
+pragma solidity 0.8.4;
 import './FarmPools.sol';
 import './lib/SafeDecimalMath.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
@@ -48,13 +48,13 @@ contract UserPools is FarmPools {
         // (amount, stakeTime, lastRewardBlock) = userPools[user][token];
     }
 
-    function _userRewards(address user) internal view returns (uint256 totalRewards) {
+    function _userRewards(address user) internal view returns (uint256 _totalRewards) {
         address[] memory _userPools = _userToPools[user].values();
         for (uint256 index = 0; index < _userPools.length; index++) {
             uint256 lastRewardBlock = userPools[user][_userPools[index]].lastRewardBlock;
             uint256 amount = userPools[user][_userPools[index]].amount;
             uint256 rewardBlocks = block.timestamp - lastRewardBlock;
-            totalRewards += _calcReward(
+            _totalRewards += _calcReward(
                 amount,
                 _pools[_userPools[index]].shareAPR,
                 _pools[_userPools[index]].shareAPRBase,
@@ -103,12 +103,13 @@ contract UserPools is FarmPools {
         require(_userToPools[_user].contains(_token), 'Non exist');
 
         uint256 lastRewardBlock = userPools[_user][_token].lastRewardBlock;
+        require(lastRewardBlock<block.timestamp,"All Points are redeemed");
         uint256 amount = userPools[_user][_token].amount;
         uint256 rewardBlocks = block.timestamp - lastRewardBlock;
-        uint256 totalRewards = _calcReward(amount, _pools[_token].shareAPR, _pools[_token].shareAPRBase, rewardBlocks);
+        uint256 userTotalRewards = _calcReward(amount, _pools[_token].shareAPR, _pools[_token].shareAPRBase, rewardBlocks);
         // emit event here
         userPools[_user][_token].lastRewardBlock = block.timestamp;
-        _mint(_user, totalRewards);
+        _mint(_user, userTotalRewards);
         return true;
     }
 
