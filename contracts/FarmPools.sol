@@ -42,6 +42,10 @@ contract FarmPools is FarmTokens {
 
         _;
     }
+    modifier canUnStakeEarly() {
+        require(_launchTime > block.timestamp, 'Staking is locked');
+        _;
+    }
     modifier canUnstake() {
         require(block.timestamp < _farmDeadline, 'Staking is locked');
         _;

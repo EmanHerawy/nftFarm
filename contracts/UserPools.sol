@@ -92,6 +92,13 @@ contract UserPools is FarmPools {
         return IERC20(_token).transfer(_user, amount);
     }
 
+    function _unstakeEarly(address _user, address _token) internal canUnStakeEarly returns (bool) {
+        uint256 amount = userPools[_user][_token].amount;
+        userPools[_user][_token].amount = 0;
+
+        return IERC20(_token).transfer(_user, amount);
+    }
+
     function _redeemPoint(address _user, address _token) internal returns (bool) {
         require(_userToPools[_user].contains(_token), 'Non exist');
 

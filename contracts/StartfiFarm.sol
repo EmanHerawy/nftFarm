@@ -11,6 +11,17 @@ contract StartfiFarm is UserPools {
     }
 
     // permit
+    function unStakeEarlyBatch(address[] calldata _tokens) external {
+        for (uint256 index = 0; index < _tokens.length; index++) {
+            require(_unstakeEarly(_msgSender(), _tokens[index]), 'Invalid stake operation');
+        }
+    }
+
+    function unStakeEarly(address _token) external {
+        require(_unstakeEarly(_msgSender(), _token), 'Invalid stake operation');
+    }
+
+    // permit
     function stakeBatch(address[] calldata _tokens, uint256[] calldata _amounts) external {
         require(_tokens.length == _amounts.length, 'Mismatch array length');
         for (uint256 index = 0; index < _tokens.length; index++) {
