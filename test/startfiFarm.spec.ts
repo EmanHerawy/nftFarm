@@ -5,15 +5,18 @@ import { solidity, MockProvider, deployContract, createFixtureLoader } from 'eth
 import { tokenFixture } from './shared/fixtures'
 
 import StartfiFarm from '../artifacts/contracts/StartfiFarm.sol/StartfiFarm.json'
-const {AddressZero} = constants;
- 
+const { AddressZero } = constants
+
 chai.use(solidity)
 const dayInSec = 24 * 60 * 60
 const launchTime = Date.now() + dayInSec * 2 // after 2 days from now
 const deadline = launchTime + dayInSec * 5 // after 5 days
-const vidalMax = 10
-const nextMax = 30
-const ragMax = 100
+// const vidalMax = 10
+// const nextMax = 30
+// const ragMax = 100
+const vidalMax = 2
+const nextMax = 3
+const ragMax = 10
 function* generateSequence(start: number, end: number) {
   for (let i = start; i <= end; i++) {
     yield i
@@ -21,7 +24,7 @@ function* generateSequence(start: number, end: number) {
 }
 describe('Startfi Farm', () => {
   const provider = new MockProvider()
-  const [wallet, other, user1, user2,user3] = provider.getWallets()
+  const [wallet, other, user1, user2, user3] = provider.getWallets()
   const loadFixture = createFixtureLoader([wallet])
   let farm: Contract
   let startfiPool: Contract
@@ -94,24 +97,9 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     nextNft = fixture.NextNFT
     RagNft = fixture.RAGNFT
     farm = await deployContract(wallet, StartfiFarm, [launchTime, deadline])
-    await vidalnft.setApprovalForAll(farm.address, true);
-    await nextNft.setApprovalForAll(farm.address, true);
-    await RagNft.setApprovalForAll(farm.address, true);
-    // distribute token between test accounts
-    // startfiPool.transfer(other.address,1000)
-    // startfiPool.transfer(user1.address,1000)
-    // startfiPool.transfer(user2.address,1000)
-    // startfiPool.transfer(user3.address, 1000)
-    
-    // nextPool.transfer(other.address,1000)
-    // nextPool.transfer(user1.address,2000)
-    // nextPool.transfer(user2.address,2000)
-    // nextPool.transfer(user3.address, 1000)
-    
-    // nextPool.transfer(other.address,3000)
-    // nextPool.transfer(user1.address,2000)
-    // nextPool.transfer(user2.address,3000)
-    // nextPool.transfer(user3.address,2000)
+    await vidalnft.setApprovalForAll(farm.address, true)
+    await nextNft.setApprovalForAll(farm.address, true)
+    await RagNft.setApprovalForAll(farm.address, true)
   })
 
   it('checking launch time and deadline ', async () => {
@@ -193,78 +181,139 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     // expect(awai`t farm.farmDeadline()).to.eq(deadline);
   })
 
- 
   it('Only owner can add reward tokens to farm ', async () => {
     await expect(
       farm
         .connect(user1)
         .addTokenReward(
-            vidalNFTDetails._tokenId,
-            vidalNFTDetails._priceInPoint,
-            vidalNFTDetails._minimumStakeRequired,
-           vidalnft.address,
-            wallet.address,
-            AddressZero
+          vidalNFTDetails._tokenId,
+          vidalNFTDetails._priceInPoint,
+          vidalNFTDetails._minimumStakeRequired,
+          vidalnft.address,
+          wallet.address,
+          AddressZero
         )
     ).to.be.reverted
-    // const test = await  farm
-    //       .connect(wallet)
-    //       .addTokenReward(
-    //         vidalNFTDetails._tokenId,
-    //         vidalNFTDetails._priceInPoint,
-    //         vidalNFTDetails._minimumStakeRequired,
-    //        vidalnft.address,
-    //         wallet.address,
-    //         AddressZero
-    // )
-    // console.log(test);
-    
+
     for await (let value of generateSequence(1, ragMax)) {
       await expect(
-         farm
+        farm
           .connect(wallet)
           .addTokenReward(
-           value -1,
+            value - 1,
             ragNftDetails._priceInPoint,
             ragNftDetails._minimumStakeRequired,
-           RagNft.address,
+            RagNft.address,
             wallet.address,
             AddressZero
-    )
+          )
       ).to.not.be.reverted
     }
-    
+
     for await (let value of generateSequence(1, vidalMax)) {
       await expect(
-         farm
+        farm
           .connect(wallet)
           .addTokenReward(
-           value -1,
+            value - 1,
             vidalNFTDetails._priceInPoint,
             vidalNFTDetails._minimumStakeRequired,
-           vidalnft.address,
+            vidalnft.address,
             wallet.address,
             AddressZero
-    )
+          )
       ).to.not.be.reverted
     }
     for await (let value of generateSequence(1, nextMax)) {
       await expect(
-         farm
+        farm
           .connect(wallet)
           .addTokenReward(
-           value -1,
+            value - 1,
             nextNftDetails._priceInPoint,
             nextNftDetails._minimumStakeRequired,
-           nextNft.address,
+            nextNft.address,
             wallet.address,
             nextPool.address
-    )
+          )
       ).to.not.be.reverted
     }
-     const cap = vidalMax*vidalNFTDetails._priceInPoint + nextMax*nextNftDetails._priceInPoint + ragMax*ragNftDetails._priceInPoint
-    expect(await farm.cap()).to.eq(cap);
+    const cap =
+      vidalMax * vidalNFTDetails._priceInPoint +
+      nextMax * nextNftDetails._priceInPoint +
+      ragMax * ragNftDetails._priceInPoint
+    expect(await farm.cap()).to.eq(cap)
   })
- 
+  it('user can stake or unstake before launch time ', async () => {
+    // distribute token between test accounts
+    await startfiPool.transfer(other.address, 10000)
+    await startfiPool.transfer(user1.address, 10000)
+    await startfiPool.transfer(user2.address, 10000)
+    await startfiPool.transfer(user3.address, 10000)
 
+    await nextPool.transfer(other.address, 10000)
+    await nextPool.transfer(user1.address, 20000)
+    await nextPool.transfer(user2.address, 20000)
+    await nextPool.transfer(user3.address, 10000)
+
+    await RAGPool.transfer(other.address, 30000)
+    await RAGPool.transfer(user1.address, 20000)
+    await RAGPool.transfer(user2.address, 30000)
+    await RAGPool.transfer(user3.address, 20000)
+
+    // approve
+    let balance = await startfiPool.balanceOf(user1.address)
+    let allownce = await startfiPool.allowance(user1.address, farm.address)
+    console.log(balance.toNumber(),'balance');
+    console.log(allownce.toNumber(),'allownce1');
+    
+    await startfiPool.connect(other).approve(farm.address, 1000)
+    await expect(startfiPool.connect(user1).approve(farm.address, 2000)).to.emit(startfiPool, 'Approval')
+          .withArgs(user1.address, farm.address, 2000)
+    // expect(await startfiPool.allowance(user1.address, farm.address)).to.eq(2000)
+    // allownce = await startfiPool.allowance(user1.address, farm.address)
+    // console.log(allownce.toNumber(),'allownce2');
+     
+    await startfiPool.connect(user2).approve(farm.address, 2000)
+    await startfiPool.connect(user3).approve(farm.address, 1000)
+
+    await nextPool.connect(other).approve(farm.address, 1000)
+    await nextPool.connect(user1).approve(farm.address, 1000)
+    await nextPool.connect(user2).approve(farm.address, 1000)
+    await nextPool.connect(user3).approve(farm.address, 1000)
+
+    await RAGPool.connect(other).approve(farm.address, 3000)
+    await RAGPool.connect(user1).approve(farm.address, 2000)
+    await RAGPool.connect(user2).approve(farm.address, 3000)
+    await RAGPool.connect(user3).approve(farm.address, 2000)
+
+
+
+    await expect(farm.connect(other).stake(startfiPool.address, 1000)).to.not.be.reverted
+    await expect(farm.connect(other).stake(nextPool.address, 1000)).to.not.be.reverted
+    await expect(farm.connect(other).stake(RAGPool.address, 3000)).to.not.be.reverted
+    await expect(farm.connect(other).unstake(RAGPool.address)).to.be.reverted
+    await expect(farm.connect(other).unStakeEarly(RAGPool.address)).to.not.be.reverted
+    await RAGPool.connect(other).approve(farm.address, 3000)
+
+    await expect(farm.connect(other).stake(RAGPool.address, 3000)).to.not.be.reverted
+
+    //   const test =await  farm.connect(user1).stake(startfiPool.address, 2000)
+    // console.log(test);
+    await expect(farm.connect(user1).stakeBatch([startfiPool.address,nextPool.address,RAGPool.address], [2000,1000,2000])).to.not.be.reverted
+   
+    // await expect(farm.connect(user1).stake(startfiPool.address, 2000)).to.not.be.reverted
+    // await expect(farm.connect(user1).stake(nextPool.address, 1000)).to.not.be.reverted
+    // await expect(farm.connect(user1).stake(RAGPool.address, 2000)).to.not.be.reverted
+  
+    await expect(farm.connect(user2).stake(startfiPool.address,2000)).to.not.be.reverted
+    await expect(farm.connect(user2).stake(nextPool.address, 1000)).to.not.be.reverted
+    await expect(farm.connect(user2).stake(RAGPool.address, 2000)).to.not.be.reverted
+  
+    await expect(farm.connect(user3).stake(startfiPool.address, 1000)).to.not.be.reverted
+    await expect(farm.connect(user3).stake(nextPool.address, 1000)).to.not.be.reverted
+    await expect(farm.connect(user3).stake(RAGPool.address, 2000)).to.not.be.reverted
+  
+  
+  })
 })
