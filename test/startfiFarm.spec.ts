@@ -1,19 +1,36 @@
 import chai, { expect } from 'chai'
-import { Contract } from 'ethers'
+import { Contract, constants } from 'ethers'
+
 import { solidity, MockProvider, deployContract, createFixtureLoader } from 'ethereum-waffle'
 import { tokenFixture } from './shared/fixtures'
 
 import StartfiFarm from '../artifacts/contracts/StartfiFarm.sol/StartfiFarm.json'
+const {AddressZero} = constants;
+ 
 chai.use(solidity)
 const dayInSec = 24 * 60 * 60
 const launchTime = Date.now() + dayInSec * 2 // after 2 days from now
 const deadline = launchTime + dayInSec * 5 // after 5 days
-
+const vidalMax = 10
+const nextMax = 30
+const ragMax = 100
+function* generateSequence(start: number, end: number) {
+  for (let i = start; i <= end; i++) {
+    yield i
+  }
+}
 describe('Startfi Farm', () => {
   const provider = new MockProvider()
-  const [wallet, other, user1, user2] = provider.getWallets()
+  const [wallet, other, user1, user2,user3] = provider.getWallets()
   const loadFixture = createFixtureLoader([wallet])
-
+  let farm: Contract
+  let startfiPool: Contract
+  let nextPool: Contract
+  let RAGPool: Contract
+  let testTokenPool: Contract
+  let vidalnft: Contract
+  let nextNft: Contract
+  let RagNft: Contract
   const startfiPoolDetails = {
     _shareAPR: 1,
     _shareAPRBase: 100,
@@ -38,19 +55,35 @@ describe('Startfi Farm', () => {
     _totalShare: 30,
     _totalShareBase: 1,
   }
+  const vidalNFTDetails = {
+    _tokenId: 0,
+    _priceInPoint: 40000,
+    _minimumStakeRequired: 0,
+    _nftAddress: null,
+    _owner: user1,
+    _tokenLinked: null,
+  }
+  const nextNftDetails = {
+    _tokenId: 0,
+    _priceInPoint: 40000,
+    _minimumStakeRequired: 0,
+    _nftAddress: null,
+    _owner: user1,
+    _tokenLinked: null,
+  }
+  const ragNftDetails = {
+    _tokenId: 0,
+    _priceInPoint: 10000,
+    _minimumStakeRequired: 0,
+    _nftAddress: null,
+    _owner: user1,
+    _tokenLinked: null,
+  }
   /**StartFi (STFI): Cap: 20% = $4,000 USD = 400,000 rSTFI
 NexType (NT): Cap 30% = $6,000 USD = 600,000 rSTFI
 Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
  */
 
-  let farm: Contract
-  let startfiPool: Contract
-  let nextPool: Contract
-  let RAGPool: Contract
-  let testTokenPool: Contract
-  let vidalnft: Contract
-  let nextNft: Contract
-  let RagNft: Contract
   before(async () => {
     const fixture = await loadFixture(tokenFixture)
     RAGPool = fixture.RAG
@@ -61,6 +94,24 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     nextNft = fixture.NextNFT
     RagNft = fixture.RAGNFT
     farm = await deployContract(wallet, StartfiFarm, [launchTime, deadline])
+    await vidalnft.setApprovalForAll(farm.address, true);
+    await nextNft.setApprovalForAll(farm.address, true);
+    await RagNft.setApprovalForAll(farm.address, true);
+    // distribute token between test accounts
+    // startfiPool.transfer(other.address,1000)
+    // startfiPool.transfer(user1.address,1000)
+    // startfiPool.transfer(user2.address,1000)
+    // startfiPool.transfer(user3.address, 1000)
+    
+    // nextPool.transfer(other.address,1000)
+    // nextPool.transfer(user1.address,2000)
+    // nextPool.transfer(user2.address,2000)
+    // nextPool.transfer(user3.address, 1000)
+    
+    // nextPool.transfer(other.address,3000)
+    // nextPool.transfer(user1.address,2000)
+    // nextPool.transfer(user2.address,3000)
+    // nextPool.transfer(user3.address,2000)
   })
 
   it('checking launch time and deadline ', async () => {
@@ -138,7 +189,82 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
         ragPoolDetails._totalShare,
         ragPoolDetails._totalShareBase
       )
-    ).to.be.revertedWith("exceed cap")
+    ).to.be.revertedWith('exceed cap')
     // expect(awai`t farm.farmDeadline()).to.eq(deadline);
   })
+
+ 
+  it('Only owner can add reward tokens to farm ', async () => {
+    await expect(
+      farm
+        .connect(user1)
+        .addTokenReward(
+            vidalNFTDetails._tokenId,
+            vidalNFTDetails._priceInPoint,
+            vidalNFTDetails._minimumStakeRequired,
+           vidalnft.address,
+            wallet.address,
+            AddressZero
+        )
+    ).to.be.reverted
+    // const test = await  farm
+    //       .connect(wallet)
+    //       .addTokenReward(
+    //         vidalNFTDetails._tokenId,
+    //         vidalNFTDetails._priceInPoint,
+    //         vidalNFTDetails._minimumStakeRequired,
+    //        vidalnft.address,
+    //         wallet.address,
+    //         AddressZero
+    // )
+    // console.log(test);
+    
+    for await (let value of generateSequence(1, ragMax)) {
+      await expect(
+         farm
+          .connect(wallet)
+          .addTokenReward(
+           value -1,
+            ragNftDetails._priceInPoint,
+            ragNftDetails._minimumStakeRequired,
+           RagNft.address,
+            wallet.address,
+            AddressZero
+    )
+      ).to.not.be.reverted
+    }
+    
+    for await (let value of generateSequence(1, vidalMax)) {
+      await expect(
+         farm
+          .connect(wallet)
+          .addTokenReward(
+           value -1,
+            vidalNFTDetails._priceInPoint,
+            vidalNFTDetails._minimumStakeRequired,
+           vidalnft.address,
+            wallet.address,
+            AddressZero
+    )
+      ).to.not.be.reverted
+    }
+    for await (let value of generateSequence(1, nextMax)) {
+      await expect(
+         farm
+          .connect(wallet)
+          .addTokenReward(
+           value -1,
+            nextNftDetails._priceInPoint,
+            nextNftDetails._minimumStakeRequired,
+           nextNft.address,
+            wallet.address,
+            nextPool.address
+    )
+      ).to.not.be.reverted
+    }
+     const cap = vidalMax*vidalNFTDetails._priceInPoint + nextMax*nextNftDetails._priceInPoint + ragMax*ragNftDetails._priceInPoint
+    expect(await farm.cap()).to.eq(cap);
+  })
+ 
+
 })

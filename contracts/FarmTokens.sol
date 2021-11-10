@@ -23,35 +23,35 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
 
     constructor() ERC20('Startfi Reward Token', 'RSTFI') {}
 
-function mintedPoints() view external returns (uint256) {
-    return _mintedPoints;
-}
-function maxCap() view external returns (uint256) {
-    return _cap;
-}
-function rewardCount() view external returns (uint256) {
-    return _tokenCount;
-}
+    function mintedPoints() external view returns (uint256) {
+        return _mintedPoints;
+    }
+
+    function cap() external view returns (uint256) {
+        return _cap;
+    }
+
+    function rewardCount() external view returns (uint256) {
+        return _tokenCount;
+    }
 
     /// @notice Only woner can call it
 
     function _addTokenReward(
-        address _nftAddress,
-        address _owner,
         uint256 _tokenId,
         uint256 _priceInPoint,
         uint256 _minimumStakeRequired,
+        address _nftAddress,
+        address _owner,
         address _tokenLinked
     ) internal onlyOwner {
         require(
             _priceInPoint != 0 &&
-                _tokenId != 0 &&
-                _minimumStakeRequired != 0 &&
                 _nftAddress != address(0) &&
                 _owner != address(0),
             'Zero values not allowed'
         );
-        require(IERC721(_nftAddress).getApproved(_tokenId) == address(this), 'Not approved');
+        require(IERC721(_nftAddress).getApproved(_tokenId) == address(this) || IERC721(_nftAddress).isApprovedForAll(_owner, address(this)), 'Not approved');
         rewardTokens[_tokenCount] = tokenDetails(
             _nftAddress,
             _owner,
@@ -77,7 +77,7 @@ function rewardCount() view external returns (uint256) {
 
     // TODO: add time check condition
     function _releaseNFT(uint256 key) internal virtual returns (bool) {
-        require(ERC20.totalSupply()>=rewardTokens[key].priceInPoint,"Can not release, users can sell it");
+        require(ERC20.totalSupply() >= rewardTokens[key].priceInPoint, 'Can not release, users can sell it');
         address nftAddress = rewardTokens[key].nftAddress;
         address _owner = rewardTokens[key].owner;
         uint256 tokenId = rewardTokens[key].tokenId;
@@ -101,7 +101,7 @@ function rewardCount() view external returns (uint256) {
     function _mint(address account, uint256 amount) internal virtual override {
         // require(ERC20.totalSupply() + amount <= _cap, 'cap exceeded');
         require(_mintedPoints + amount <= _cap, 'cap exceeded');
-        _mintedPoints+=amount;
+        _mintedPoints += amount;
         super._mint(account, amount);
     }
 }

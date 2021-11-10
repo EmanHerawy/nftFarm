@@ -97,14 +97,14 @@ contract StartfiFarm is UserPools {
     }
 
     function addTokenReward(
-        address _nftAddress,
-        address _owner,
         uint256 _tokenId,
         uint256 _priceInPoint,
         uint256 _minimumStakeRequired,
+        address _nftAddress,
+        address _owner,
         address _tokenLinked
-    ) internal {
-        _addTokenReward(_nftAddress, _owner, _tokenId, _priceInPoint, _minimumStakeRequired, _tokenLinked);
+    ) external {
+        _addTokenReward( _tokenId, _priceInPoint, _minimumStakeRequired,_nftAddress, _owner, _tokenLinked);
     }
 
     function releaseNFT(uint256 key) external {

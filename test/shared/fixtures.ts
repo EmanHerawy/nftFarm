@@ -35,9 +35,18 @@ export async function tokenFixture([wallet]: Wallet[], _: MockProvider): Promise
   const NextNFT = await deployContract(wallet, ERC721, [name2, symbol2, baseUri])
   const RAGNFT = await deployContract(wallet, ERC721, [name3, symbol3, baseUri])
   // mint
-   await VidalNFT.mint(wallet.address)
+  const vidalMax = 10;
+  const nextMax = 30;
+  const ragMax = 100;
+for (let index = 0; index < vidalMax; index++) {
+    await VidalNFT.mint(wallet.address) 
+}
+for (let index = 0; index < nextMax; index++) {
     await NextNFT.mint(wallet.address)
+}
+for (let index = 0; index < ragMax; index++) {
     await RAGNFT.mint(wallet.address)
+}
 
   return { startfi, NexType, RAG,testToken, VidalNFT, NextNFT, RAGNFT }
 }
