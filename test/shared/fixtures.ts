@@ -7,11 +7,14 @@ import ERC20 from '../../artifacts/contracts/test-supplements-contracts/AnyERC20
 import ERC721 from '../../artifacts/contracts/test-supplements-contracts/AnyERC721.sol/AnyERC721.json'
 const { Web3Provider } = providers
 interface ContractsFixture {
-  pool1: Contract
-  pool2: Contract
-  nft1: Contract
-  nft2: Contract
-  }
+  startfi: Contract
+  NexType: Contract
+  RAG: Contract
+  testToken: Contract
+  VidalNFT: Contract
+  NextNFT: Contract
+  RAGNFT: Contract
+}
 
 const overrides = {
   gasLimit: 9999999,
@@ -19,16 +22,22 @@ const overrides = {
 let baseUri = 'http://ipfs.io'
 const name1 = 'StartFiToken'
 const symbol1 = 'STFI'
-const name2 = 'XToken'
-const symbol2 = 'xT'
+const name2 = 'NexType'
+const symbol2 = 'NT'
+const name3 = 'Rage Fan'
+const symbol3 = 'RAG'
 export async function tokenFixture([wallet]: Wallet[], _: MockProvider): Promise<ContractsFixture> {
-  const pool1 = await deployContract(wallet, ERC20, [name1, symbol1, expandTo18Decimals(10000), wallet.address])
-  const pool2 = await deployContract(wallet, ERC20, [name2, symbol2, expandTo18Decimals(10000), wallet.address])
-  const nft1 = await deployContract(wallet, ERC721, [name1, symbol1, baseUri])
-  const nft2 = await deployContract(wallet, ERC721, [name2, symbol2, baseUri])
+  const startfi = await deployContract(wallet, ERC20, [name1, symbol1, expandTo18Decimals(10000), wallet.address])
+  const NexType = await deployContract(wallet, ERC20, [name2, symbol2, expandTo18Decimals(10000), wallet.address])
+  const RAG = await deployContract(wallet, ERC20, [name3, symbol3, expandTo18Decimals(10000), wallet.address])
+  const testToken = await deployContract(wallet, ERC20, [name1, symbol3, expandTo18Decimals(10000), wallet.address])
+  const VidalNFT = await deployContract(wallet, ERC721, [name1, symbol1, baseUri])
+  const NextNFT = await deployContract(wallet, ERC721, [name2, symbol2, baseUri])
+  const RAGNFT = await deployContract(wallet, ERC721, [name3, symbol3, baseUri])
+  // mint
+   await VidalNFT.mint(wallet.address)
+    await NextNFT.mint(wallet.address)
+    await RAGNFT.mint(wallet.address)
 
-
-  return { pool1, pool2, nft1, nft2 }
+  return { startfi, NexType, RAG,testToken, VidalNFT, NextNFT, RAGNFT }
 }
-
-

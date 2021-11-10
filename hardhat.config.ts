@@ -162,7 +162,7 @@ matic: {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 200
+            runs: 999999// 1000000 like uniswap
           }
         }
       },
@@ -198,7 +198,7 @@ matic: {
   gasReporter: {
     currency: 'USD',
     gasPrice: 100,
-    enabled: process.env.REPORT_GAS ? true : false,
+    enabled: true,//process.env.REPORT_GAS ? true : false,
     // coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     maxMethodDiff: 10,
   },
@@ -217,7 +217,8 @@ matic: {
     deploy: 'deploy',
     deployments: 'deployments',
     imports: 'imports'
-},
+  },
+  
   mocha: {
     timeout: 200000000
   },
