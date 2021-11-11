@@ -9,7 +9,7 @@ contract FarmPools is FarmTokens {
     using SafeDecimalMath for uint256;
 
     using EnumerableSet for EnumerableSet.AddressSet;
-    uint256 private immutable _farmDeadline;
+    uint256 internal immutable _farmDeadline;
     uint256  internal immutable _launchTime;
     uint256 private _RstfiMaxSupply;
     uint256 private totalShares;
@@ -48,7 +48,7 @@ contract FarmPools is FarmTokens {
         _;
     }
     modifier canUnstake() {
-        require(block.timestamp < _farmDeadline, 'Staking is locked');
+        require(block.timestamp > _farmDeadline, 'Staking is locked');
         _;
     }
 

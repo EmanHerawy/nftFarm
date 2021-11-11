@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
+// import 'hardhat/console.sol';
+
 import './FarmPools.sol';
 import './lib/SafeDecimalMath.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
@@ -28,10 +30,11 @@ contract UserPools is FarmPools {
         uint256 rewardBlocks
     ) private pure returns (uint256) {
         // get the rate e.g. who much points for x amount stake in y pool
-        uint256 rate = amount.multiplyDecimalRound((shareAPR.divideDecimal(baseAPR * 100)));
+        uint256 rate = amount*(shareAPR.divideDecimal(baseAPR * 100));
         // multiply in duration to get the reward now since the the staking time
-        return rate * rewardBlocks;
+        return rate.multiplyDecimal(rewardBlocks);
     }
+
     function _userPoolDetails(address user, address token)
         internal
         view
@@ -50,10 +53,17 @@ contract UserPools is FarmPools {
 
     function _userRewards(address user) internal view returns (uint256 _totalRewards) {
         address[] memory _userPools = _userToPools[user].values();
+        uint256 currentBlock = _farmDeadline > block.timestamp ? block.timestamp : _farmDeadline;
         for (uint256 index = 0; index < _userPools.length; index++) {
+            // console.log('%s loop', index);
+
             uint256 lastRewardBlock = userPools[user][_userPools[index]].lastRewardBlock;
             uint256 amount = userPools[user][_userPools[index]].amount;
-            uint256 rewardBlocks = block.timestamp - lastRewardBlock;
+
+            uint256 rewardBlocks = currentBlock > lastRewardBlock ? currentBlock - lastRewardBlock : 0;
+            // console.log('last reward time is %s and diff is %s', lastRewardBlock, rewardBlocks);
+            // console.log('total reward  is %s', _totalRewards);
+
             _totalRewards += _calcReward(
                 amount,
                 _pools[_userPools[index]].shareAPR,
@@ -63,7 +73,7 @@ contract UserPools is FarmPools {
         }
     }
 
-
+ 
     function _getUserPools(address user) internal view returns (address[] memory currentUserPools) {
         return _userToPools[user].values();
     }
@@ -101,15 +111,25 @@ contract UserPools is FarmPools {
 
     function _redeemPoint(address _user, address _token) internal returns (bool) {
         require(_userToPools[_user].contains(_token), 'Non exist');
-
         uint256 lastRewardBlock = userPools[_user][_token].lastRewardBlock;
-        require(lastRewardBlock<block.timestamp,"All Points are redeemed");
+        require(lastRewardBlock < _farmDeadline, 'All Points are redeemed');
+        uint256 currentBlock = _farmDeadline > block.timestamp ? block.timestamp : _farmDeadline;
+
         uint256 amount = userPools[_user][_token].amount;
-        uint256 rewardBlocks = block.timestamp - lastRewardBlock;
-        uint256 userTotalRewards = _calcReward(amount, _pools[_token].shareAPR, _pools[_token].shareAPRBase, rewardBlocks);
+        if (currentBlock > lastRewardBlock) {
+            uint256 rewardBlocks = currentBlock - lastRewardBlock;
+            uint256 userTotalRewards = _calcReward(
+                amount,
+                _pools[_token].shareAPR,
+                _pools[_token].shareAPRBase,
+                rewardBlocks
+            );
+            userPools[_user][_token].lastRewardBlock = block.timestamp;
+            _mint(_user, userTotalRewards);
+        }
+
         // emit event here
-        userPools[_user][_token].lastRewardBlock = block.timestamp;
-        _mint(_user, userTotalRewards);
+
         return true;
     }
 
