@@ -3,7 +3,11 @@ pragma solidity 0.8.4;
 import './UserPools.sol';
 
 contract StartfiFarm is UserPools {
-    constructor(uint256 launchTime_, uint256 deadline_) UserPools(launchTime_, deadline_) {}
+    constructor(
+        uint256 launchTime_,
+        uint256 deadline_,
+        uint256 timeToRelease_
+    ) FarmPools(launchTime_, deadline_, timeToRelease_) {}
 
     function userRewards(address user) external view returns (uint256) {
         return _userRewards(user);
@@ -104,7 +108,7 @@ contract StartfiFarm is UserPools {
         address _owner,
         address _tokenLinked
     ) external {
-        _addTokenReward( _tokenId, _priceInPoint, _minimumStakeRequired,_nftAddress, _owner, _tokenLinked);
+        _addTokenReward(_tokenId, _priceInPoint, _minimumStakeRequired, _nftAddress, _owner, _tokenLinked);
     }
 
     function releaseNFT(uint256 key) external {

@@ -21,6 +21,24 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
     }
     mapping(uint256 => tokenDetails) internal rewardTokens;
 
+    event RewardReleased(address indexed owner, address indexed token, uint256 key, uint256 tokenId, uint256 timestamp);
+    event RewardClaimed(
+        address indexed claimer,
+        address indexed token,
+        uint256 key,
+        uint256 tokenId,
+        uint256 timestamp
+    );
+    event RewardAdded(
+        address indexed owner,
+        address indexed nftAddress,
+        address tokenLinked,
+        uint256 tokenId,
+        uint256 priceInPoint,
+        uint256 minimumStakeRequired,
+        uint256 timestamp
+    );
+
     constructor() ERC20('Startfi Reward Token', 'RSTFI') {}
 
     function mintedPoints() external view returns (uint256) {
@@ -45,13 +63,12 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         address _owner,
         address _tokenLinked
     ) internal onlyOwner {
+        require(_priceInPoint != 0 && _nftAddress != address(0) && _owner != address(0), 'Zero values not allowed');
         require(
-            _priceInPoint != 0 &&
-                _nftAddress != address(0) &&
-                _owner != address(0),
-            'Zero values not allowed'
+            IERC721(_nftAddress).getApproved(_tokenId) == address(this) ||
+                IERC721(_nftAddress).isApprovedForAll(_owner, address(this)),
+            'Not approved'
         );
-        require(IERC721(_nftAddress).getApproved(_tokenId) == address(this) || IERC721(_nftAddress).isApprovedForAll(_owner, address(this)), 'Not approved');
         rewardTokens[_tokenCount] = tokenDetails(
             _nftAddress,
             _owner,
@@ -62,6 +79,16 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         );
         _cap += _priceInPoint;
         _tokenCount++;
+        emit RewardAdded(
+            _owner,
+            _nftAddress,
+            _tokenLinked,
+            _tokenId,
+            _priceInPoint,
+            _minimumStakeRequired,
+            block.timestamp
+        );
+
         _transferNFT(_nftAddress, _tokenId, _owner, address(this));
     }
 
@@ -82,6 +109,7 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         address _owner = rewardTokens[key].owner;
         uint256 tokenId = rewardTokens[key].tokenId;
         require(IERC721(nftAddress).ownerOf(tokenId) == address(this), 'UnAuthorized');
+        emit RewardReleased(_owner, nftAddress, key, tokenId, block.timestamp);
         _transferNFT(nftAddress, tokenId, address(this), _owner);
         return true;
     }
@@ -94,6 +122,8 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         address nftAddress = rewardTokens[key].nftAddress;
         uint256 tokenId = rewardTokens[key].tokenId;
         require(IERC721(nftAddress).ownerOf(tokenId) == address(this), 'UnAuthorized');
+        emit RewardClaimed(_user, nftAddress, key, tokenId, block.timestamp);
+
         _transferNFT(nftAddress, tokenId, address(this), _user);
         return true;
     }

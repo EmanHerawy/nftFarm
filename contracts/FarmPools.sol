@@ -9,8 +9,9 @@ contract FarmPools is FarmTokens {
     using SafeDecimalMath for uint256;
 
     using EnumerableSet for EnumerableSet.AddressSet;
+    uint256 internal immutable _timeToRelease;
     uint256 internal immutable _farmDeadline;
-    uint256  internal immutable _launchTime;
+    uint256 internal immutable _launchTime;
     uint256 private _RstfiMaxSupply;
     uint256 private totalShares;
 
@@ -28,7 +29,15 @@ contract FarmPools is FarmTokens {
     }
     EnumerableSet.AddressSet private _poolsSet;
     mapping(address => poolDetails) internal _pools;
-
+    event PoolAdded(
+        address token,
+        uint256 shareAPR,
+        uint256 shareAPRBase,
+        uint256 minimumStake,
+        uint256 cap,
+        uint256 totalShare,
+        uint256 totalShareBase
+    );
     // modifiers
 
     modifier canStake(
@@ -52,14 +61,18 @@ contract FarmPools is FarmTokens {
         _;
     }
 
-    constructor(uint256 launchTime_, uint256 _deadline) {
-        _farmDeadline = _deadline;
+    constructor(uint256 launchTime_, uint256 deadline_, uint256 timeToRelease_) {
+       require(deadline_>launchTime_, "Launch time should be less then deadline");
+       require(timeToRelease_>deadline_,"deadline should be less then release time");
+        _farmDeadline = deadline_;
         _launchTime = launchTime_;
+        _timeToRelease = timeToRelease_;
     }
 
     function farmDeadline() external view returns (uint256) {
         return _farmDeadline;
     }
+
     function launchTime() external view returns (uint256) {
         return _launchTime;
     }
@@ -91,10 +104,11 @@ contract FarmPools is FarmTokens {
         require(!_poolsSet.contains(_token), 'Duplicated value is not allowed');
         _poolsSet.add(_token);
         _pools[_token] = poolDetails(_shareAPR, _shareAPRBase, _minimumStake, _cap, 0, _totalShare, _totalShareBase);
+        emit PoolAdded(_token, _shareAPR, _shareAPRBase, _minimumStake, _cap, _totalShare, _totalShareBase);
     }
 
     function _releaseNFT(uint256 key) internal override onlyOwner returns (bool) {
-        require(_farmDeadline < block.timestamp, 'Farm is running');
+        require(_timeToRelease <= block.timestamp, 'Farm is running');
         return super._releaseNFT(key);
     }
 

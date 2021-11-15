@@ -7,7 +7,7 @@ import './lib/SafeDecimalMath.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-contract UserPools is FarmPools {
+abstract contract UserPools is FarmPools {
     using SafeDecimalMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -21,7 +21,9 @@ contract UserPools is FarmPools {
     mapping(address => mapping(address => userPool)) private userPools;
     mapping(address => EnumerableSet.AddressSet) private _userToPools;
 
-    constructor(uint256 poolEndTime_, uint256 deadline_) FarmPools(poolEndTime_, deadline_) {}
+    event Stake(address indexed staker, address indexed pool, uint256 amount, uint256 timestamp);
+    event Unstake(address indexed staker, address indexed pool, uint256 amount, uint256 timestamp);
+    event Redeem(address indexed redeemer, address indexed pool, uint256 amount, uint256 timestamp);
 
     function _calcReward(
         uint256 amount,
@@ -30,7 +32,7 @@ contract UserPools is FarmPools {
         uint256 rewardBlocks
     ) private pure returns (uint256) {
         // get the rate e.g. who much points for x amount stake in y pool
-        uint256 rate = amount*(shareAPR.divideDecimal(baseAPR * 100));
+        uint256 rate = amount * (shareAPR.divideDecimal(baseAPR * 100));
         // multiply in duration to get the reward now since the the staking time
         return rate.multiplyDecimal(rewardBlocks);
     }
@@ -73,7 +75,6 @@ contract UserPools is FarmPools {
         }
     }
 
- 
     function _getUserPools(address user) internal view returns (address[] memory currentUserPools) {
         return _userToPools[user].values();
     }
@@ -91,6 +92,7 @@ contract UserPools is FarmPools {
         }
         userPools[_user][_token] = userPool(stakeAmount, block.timestamp, _launchTime);
         // emit event here
+        emit Stake(_user, _token, _amount, block.timestamp);
         return IERC20(_token).transferFrom(_user, address(this), _amount);
     }
 
@@ -98,6 +100,7 @@ contract UserPools is FarmPools {
         _redeemPoint(_user, _token);
         uint256 amount = userPools[_user][_token].amount;
         userPools[_user][_token].amount = 0;
+        emit Unstake(_user, _token, amount, block.timestamp);
 
         return IERC20(_token).transfer(_user, amount);
     }
@@ -105,6 +108,7 @@ contract UserPools is FarmPools {
     function _unstakeEarly(address _user, address _token) internal canUnStakeEarly returns (bool) {
         uint256 amount = userPools[_user][_token].amount;
         userPools[_user][_token].amount = 0;
+        emit Unstake(_user, _token, amount, block.timestamp);
 
         return IERC20(_token).transfer(_user, amount);
     }
@@ -125,6 +129,8 @@ contract UserPools is FarmPools {
                 rewardBlocks
             );
             userPools[_user][_token].lastRewardBlock = block.timestamp;
+            emit Redeem(_user, _token, userTotalRewards, block.timestamp);
+
             _mint(_user, userTotalRewards);
         }
 

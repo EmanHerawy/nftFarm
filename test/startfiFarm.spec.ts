@@ -13,12 +13,13 @@ let blockBefore: any
 const dayInSec = 24 * 60 * 60
 let launchTime: number // after 2 days from now
 let deadline: number // after 5 days
-// const vidalMax = 10
-// const nextMax = 30
-// const ragMax = 100
-const vidalMax = 2
-const nextMax = 3
-const ragMax = 10
+let releaseTime: number // after 5 days
+const vidalMax = 10
+const nextMax = 30
+const ragMax = 100
+// const vidalMax = 2
+// const nextMax = 3
+// const ragMax = 10
 function* generateSequence(start: number, end: number) {
   for (let i = start; i <= end; i++) {
     yield i
@@ -103,7 +104,8 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     blockBefore = await provider.getBlock(blockNumBefore)
     launchTime = blockBefore.timestamp + dayInSec * 2 // after 2 days from now
     deadline = launchTime + dayInSec * 5
-    farm = await deployContract(wallet, StartfiFarm, [launchTime, deadline])
+    releaseTime = deadline + dayInSec * 50
+    farm = await deployContract(wallet, StartfiFarm, [launchTime, deadline, releaseTime])
     await vidalnft.setApprovalForAll(farm.address, true)
     await nextNft.setApprovalForAll(farm.address, true)
     await RagNft.setApprovalForAll(farm.address, true)
@@ -382,90 +384,20 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     // await provider.send('evm_increaseTime', [deadline])
     // await provider.send('evm_mine', [])
     expect(await farm.connect(user3).redeem(RAGPool.address)).to.emit(farm, 'Transfer')
-    // user1Test = await farm.test(user1.address)
-    // ///uint256 _totalRewards ,uint256 currentBlock,uint256 timestamp
-    // console.log(user1Test._totalRewards.toNumber(), 'user1 rewards 333333')
-    // console.log(user1Test.currentBlock.toNumber(), 'user1 currentBlock 3333')
-    // console.log(user1Test.timestamp.toNumber(), 'user1 timestamp 333')
-    // console.log(deadline, 'user1 deadline 333')
-    // const percentage =
-    //   startfiPoolDetails._shareAPR /
-    //   (startfiPoolDetails._shareAPRBase *100);
-    //   const blockNumBefore = await provider.getBlockNumber();
-    // const blockBefore = await provider.getBlock(blockNumBefore);
-    // console.log(blockBefore.timestamp, deadline-launchTime,'blockBefore.timestamp');
-
-    // const pointsinDay= ( 5000*percentage ) * (deadline-launchTime)
-    // console.log({pointsinDay});
-
-    //     expect(await farm._calcReward(  5000,
-    //    startfiPoolDetails._shareAPR,
-    //      startfiPoolDetails._shareAPRBase,
-    //      deadline-launchTime)).to.eq(pointsinDay);
-    // const userPools = await farm.getUserPools(other.address);
-    // console.log({userPools});
-    // const userPoolDetails = await farm.userPoolDetails(other.address,startfiPool.address);
-    // console.log(userPoolDetails.amount.toNumber(),userPoolDetails.lastRewardBlock.toNumber(),launchTime,userPoolDetails.stakeTime.toNumber());
-
-    //      expect(await farm.userRewards(other.address)).to.eq(pointsinDay);
   })
-  // it('go in time and calculate points , user can not unstake ', async () => {
-  //   await provider.send('evm_increaseTime', [(launchTime-blockBefore.timestamp ) + 100])
-  //   await provider.send('evm_mine', [])
-  //   // expect(await farm.userRewards(other.address)).to.eq(0);
+  
+  it('go in time to the fram end time , user can unstake , unstakeBatch or claim regardless the time as long as balalnce is enough ', async () => {
+    await provider.send('evm_increaseTime', [launchTime])
+    await provider.send('evm_mine', [])
 
-  //   let user1Test = await farm.testTime(user1.address)
-  //   console.log(blockBefore.timestamp, launchTime, deadline, ' blockBefore.timestamp')
+        await expect(farm.connect(other).unstake(RAGPool.address)).to.be.not.reverted
+        await expect(farm.connect(other).unstakeBatch([startfiPool.address, nextPool.address])).to.be.not.reverted
+        await expect(farm.connect(user1).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.be.not.reverted
+        await expect(farm.connect(user2).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.be.not.reverted
+    await expect(farm.connect(user3).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.be.not.reverted
+      await expect(farm.connect(other).claim(5)).to.emit(farm, 'Transfer')
+      await expect(farm.connect(user1).claim(6)).to.emit(farm, 'Transfer')
+      await expect(farm.connect(user3).claim(7)).to.emit(farm, 'Transfer')
 
-  //   ///uint256 _totalRewards ,uint256 currentBlock,uint256 timestamp
-  //   console.log(user1Test._totalRewards.toNumber(), 'user1 rewards 111111111')
-  //   console.log(user1Test.currentBlock.toNumber(), 'user1 currentBlock 1111111111')
-  //   console.log(user1Test.timestamp.toNumber(), 'user1 timestamp 11111111')
-  //   // // await RAGPool.connect(other).approve(farm.address, 100)
-
-  //   // await expect(farm.connect(other).stake(RAGPool.address, 100)).to.be.reverted
-
-  //   // await expect(farm.connect(other).unstake(RAGPool.address)).to.be.reverted
-  //   // await expect(farm.connect(other).unStakeEarly(RAGPool.address)).to.be.reverted
-  //   // await provider.send('evm_increaseTime', [launchTime + dayInSec])
-  //   // await provider.send('evm_mine', [])
-  //   // user1Test = await farm.test(user1.address)
-  //   // ///uint256 _totalRewards ,uint256 currentBlock,uint256 timestamp
-  //   // console.log(user1Test._totalRewards.toNumber(), 'user1 rewards 222222')
-  //   // console.log(user1Test.currentBlock.toNumber(), 'user1 currentBlock 22222')
-  //   // console.log(user1Test.timestamp.toNumber(), 'user1 timestamp 22222222')
-  //   let calc = await farm._calcReward(4, startfiPoolDetails._shareAPR, startfiPoolDetails._shareAPRBase, 172787)
-  //   console.log(calc.toNumber(), 'calc')
-
-  //   // // expect(await farm.userRewards(other.address)).to.eq(0);
-  //   // await provider.send('evm_increaseTime', [deadline])
-  //   // await provider.send('evm_mine', [])
-
-  //   // user1Test = await farm.test(user1.address)
-  //   // ///uint256 _totalRewards ,uint256 currentBlock,uint256 timestamp
-  //   // console.log(user1Test._totalRewards.toNumber(), 'user1 rewards 333333')
-  //   // console.log(user1Test.currentBlock.toNumber(), 'user1 currentBlock 3333')
-  //   // console.log(user1Test.timestamp.toNumber(), 'user1 timestamp 333')
-  //   // console.log(deadline, 'user1 deadline 333')
-  //   // const percentage =
-  //   //   startfiPoolDetails._shareAPR /
-  //   //   (startfiPoolDetails._shareAPRBase *100);
-  //   //   const blockNumBefore = await provider.getBlockNumber();
-  //   // const blockBefore = await provider.getBlock(blockNumBefore);
-  //   // console.log(blockBefore.timestamp, deadline-launchTime,'blockBefore.timestamp');
-
-  //   // const pointsinDay= ( 5000*percentage ) * (deadline-launchTime)
-  //   // console.log({pointsinDay});
-
-  //   //     expect(await farm._calcReward(  5000,
-  //   //    startfiPoolDetails._shareAPR,
-  //   //      startfiPoolDetails._shareAPRBase,
-  //   //      deadline-launchTime)).to.eq(pointsinDay);
-  //   // const userPools = await farm.getUserPools(other.address);
-  //   // console.log({userPools});
-  //   // const userPoolDetails = await farm.userPoolDetails(other.address,startfiPool.address);
-  //   // console.log(userPoolDetails.amount.toNumber(),userPoolDetails.lastRewardBlock.toNumber(),launchTime,userPoolDetails.stakeTime.toNumber());
-
-  //   //      expect(await farm.userRewards(other.address)).to.eq(pointsinDay);
-  // })
+   })
 })
