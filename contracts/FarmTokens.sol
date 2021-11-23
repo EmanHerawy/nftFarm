@@ -60,18 +60,19 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         uint256 _priceInPoint,
         uint256 _minimumStakeRequired,
         address _nftAddress,
-        address _owner,
+        address owner_,
         address _tokenLinked
-    ) internal onlyOwner {
-        require(_priceInPoint != 0 && _nftAddress != address(0) && _owner != address(0), 'Zero values not allowed');
+    ) internal onlyOwner  virtual{
+        require(_priceInPoint != 0 && _nftAddress != address(0) && owner_ != address(0), 'Zero values not allowed');
+     
         require(
             IERC721(_nftAddress).getApproved(_tokenId) == address(this) ||
-                IERC721(_nftAddress).isApprovedForAll(_owner, address(this)),
+                IERC721(_nftAddress).isApprovedForAll(owner_, address(this)),
             'Not approved'
         );
         rewardTokens[_tokenCount] = tokenDetails(
             _nftAddress,
-            _owner,
+            owner_,
             _tokenId,
             _priceInPoint,
             _minimumStakeRequired,
@@ -80,7 +81,7 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         _cap += _priceInPoint;
         _tokenCount++;
         emit RewardAdded(
-            _owner,
+            owner_,
             _nftAddress,
             _tokenLinked,
             _tokenId,
@@ -89,7 +90,7 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
             block.timestamp
         );
 
-        _transferNFT(_nftAddress, _tokenId, _owner, address(this));
+        _transferNFT(_nftAddress, _tokenId, owner_, address(this));
     }
 
     function _transferNFT(
@@ -106,11 +107,11 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
     function _releaseNFT(uint256 key) internal virtual returns (bool) {
         require(ERC20.totalSupply() >= rewardTokens[key].priceInPoint, 'Can not release, users can sell it');
         address nftAddress = rewardTokens[key].nftAddress;
-        address _owner = rewardTokens[key].owner;
+        address owner_ = rewardTokens[key].owner;
         uint256 tokenId = rewardTokens[key].tokenId;
         require(IERC721(nftAddress).ownerOf(tokenId) == address(this), 'UnAuthorized');
-        emit RewardReleased(_owner, nftAddress, key, tokenId, block.timestamp);
-        _transferNFT(nftAddress, tokenId, address(this), _owner);
+        emit RewardReleased(owner_, nftAddress, key, tokenId, block.timestamp);
+        _transferNFT(nftAddress, tokenId, address(this), owner_);
         return true;
     }
 

@@ -61,9 +61,13 @@ contract FarmPools is FarmTokens {
         _;
     }
 
-    constructor(uint256 launchTime_, uint256 deadline_, uint256 timeToRelease_) {
-       require(deadline_>launchTime_, "Launch time should be less then deadline");
-       require(timeToRelease_>deadline_,"deadline should be less then release time");
+    constructor(
+        uint256 launchTime_,
+        uint256 deadline_,
+        uint256 timeToRelease_
+    ) {
+        require(deadline_ > launchTime_, 'Launch time should be less then deadline');
+        require(timeToRelease_ > deadline_, 'deadline should be less then release time');
         _farmDeadline = deadline_;
         _launchTime = launchTime_;
         _timeToRelease = timeToRelease_;
@@ -84,7 +88,7 @@ contract FarmPools is FarmTokens {
         uint256 _shareAPR,
         uint256 _shareAPRBase,
         uint256 _minimumStake,
-        uint256 _cap,
+        uint256 cap_,
         uint256 _totalShare,
         uint256 _totalShareBase
     ) internal onlyOwner {
@@ -95,7 +99,7 @@ contract FarmPools is FarmTokens {
             _shareAPR != 0 &&
                 _shareAPRBase != 0 &&
                 _minimumStake != 0 &&
-                _cap != 0 &&
+                cap_ != 0 &&
                 _totalShare != 0 &&
                 _totalShareBase != 0 &&
                 _token != address(0),
@@ -103,8 +107,8 @@ contract FarmPools is FarmTokens {
         );
         require(!_poolsSet.contains(_token), 'Duplicated value is not allowed');
         _poolsSet.add(_token);
-        _pools[_token] = poolDetails(_shareAPR, _shareAPRBase, _minimumStake, _cap, 0, _totalShare, _totalShareBase);
-        emit PoolAdded(_token, _shareAPR, _shareAPRBase, _minimumStake, _cap, _totalShare, _totalShareBase);
+        _pools[_token] = poolDetails(_shareAPR, _shareAPRBase, _minimumStake, cap_, 0, _totalShare, _totalShareBase);
+        emit PoolAdded(_token, _shareAPR, _shareAPRBase, _minimumStake, cap_, _totalShare, _totalShareBase);
     }
 
     function _releaseNFT(uint256 key) internal override onlyOwner returns (bool) {
@@ -123,7 +127,8 @@ contract FarmPools is FarmTokens {
             uint256 _shareAPR,
             uint256 _shareAPRBase,
             uint256 _minimumStake,
-            uint256 _cap,
+            uint256 cap_,
+            uint256 totalSupply_,
             uint256 _totalShare,
             uint256 _totalShareBase
         )
@@ -131,9 +136,24 @@ contract FarmPools is FarmTokens {
         _shareAPR = _pools[_token].shareAPR;
         _shareAPRBase = _pools[_token].shareAPRBase;
         _minimumStake = _pools[_token].minimumStake;
-        _cap = _pools[_token].cap;
+        cap_ = _pools[_token].cap;
+        totalSupply_ = _pools[_token].totalSupply;
         _totalShare = _pools[_token].totalShare;
         _totalShareBase = _pools[_token].totalShareBase;
+    }
+
+    function _addTokenReward(
+        uint256 _tokenId,
+        uint256 _priceInPoint,
+        uint256 _minimumStakeRequired,
+        address _nftAddress,
+        address owner_,
+        address _tokenLinked
+    ) internal virtual override {
+        if (_minimumStakeRequired > 0) {
+            require(_poolsSet.contains(_tokenLinked), 'non exist pool');
+        }
+        super._addTokenReward(_tokenId, _priceInPoint, _minimumStakeRequired, _nftAddress, owner_, _tokenLinked);
     }
 
     function getPools() external view returns (address[] memory poolAddreses) {

@@ -84,13 +84,17 @@ abstract contract UserPools is FarmPools {
         address _token,
         uint256 _amount
     ) internal canStake(_user, _token, _amount) returns (bool) {
+        uint256 _totalshare = _pools[_token].totalSupply + _amount;
+        require(_totalshare <= _pools[_token].cap, 'Pool Cap exceeded');
         uint256 stakeAmount = _amount;
         if (_userToPools[_user].contains(_token)) {
             stakeAmount = userPools[_user][_token].amount + _amount;
         } else {
             _userToPools[_user].add(_token);
         }
+        _pools[_token].totalSupply = _totalshare;
         userPools[_user][_token] = userPool(stakeAmount, block.timestamp, _launchTime);
+
         // emit event here
         emit Stake(_user, _token, _amount, block.timestamp);
         return IERC20(_token).transferFrom(_user, address(this), _amount);

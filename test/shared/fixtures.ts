@@ -27,10 +27,10 @@ const symbol2 = 'NT'
 const name3 = 'Rage Fan'
 const symbol3 = 'RAG'
 export async function tokenFixture([wallet]: Wallet[], _: MockProvider): Promise<ContractsFixture> {
-  const startfi = await deployContract(wallet, ERC20, [name1, symbol1, expandTo18Decimals(10000), wallet.address])
-  const NexType = await deployContract(wallet, ERC20, [name2, symbol2, expandTo18Decimals(10000), wallet.address])
-  const RAG = await deployContract(wallet, ERC20, [name3, symbol3, expandTo18Decimals(10000), wallet.address])
-  const testToken = await deployContract(wallet, ERC20, [name1, symbol3, expandTo18Decimals(10000), wallet.address])
+  const startfi = await deployContract(wallet, ERC20, [name1, symbol1, expandTo18Decimals(100000000), wallet.address])
+  const NexType = await deployContract(wallet, ERC20, [name2, symbol2, expandTo18Decimals(100000000), wallet.address])
+  const RAG = await deployContract(wallet, ERC20, [name3, symbol3, expandTo18Decimals(100000000), wallet.address])
+  const testToken = await deployContract(wallet, ERC20, [name1, symbol3, expandTo18Decimals(100000000), wallet.address])
   const VidalNFT = await deployContract(wallet, ERC721, [name1, symbol1, baseUri])
   const NextNFT = await deployContract(wallet, ERC721, [name2, symbol2, baseUri])
   const RAGNFT = await deployContract(wallet, ERC721, [name3, symbol3, baseUri])
