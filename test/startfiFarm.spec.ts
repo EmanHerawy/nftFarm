@@ -1,9 +1,9 @@
 import chai, { expect } from 'chai'
 import { Contract, constants, BigNumber } from 'ethers'
- import { waffle } from 'hardhat'
-const { solidity,  deployContract, createFixtureLoader, provider } =waffle
+import { waffle } from 'hardhat'
+const { solidity, deployContract, createFixtureLoader, provider } = waffle
 
- import { tokenFixture } from './shared/fixtures'
+import { tokenFixture } from './shared/fixtures'
 import { expandTo18Decimals } from './shared/utilities'
 
 import StartfiFarm from '../artifacts/contracts/StartfiFarm.sol/StartfiFarm.json'
@@ -28,7 +28,7 @@ function* generateSequence(start: number, end: number) {
   }
 }
 // describe('Startfi Farm : checking cap and rewards', () => {
-//   /**Basic Numbers: 
+//   /**Basic Numbers:
 // Seconds per day = 86,400
 // Seconds per 30 Days = 2,592,000
 
@@ -36,7 +36,7 @@ function* generateSequence(start: number, end: number) {
 // Period: 30 Days
 
 // STFI Pool:
-// Interest rate per second 0.00000385802 rSTFI   0.000023148148148148147 %  
+// Interest rate per second 0.00000385802 rSTFI   0.000023148148148148147 %
 // 6000 * 0.000038580246913580246 * (60*60*24)*30
 // 600000
 // Minimum staked amount 1000 STFI
@@ -55,7 +55,7 @@ function* generateSequence(start: number, end: number) {
 // how many token this pool can hold (What do you mean?)
 // pool total share  of RSTFI in the whole farm 50%
 //  */
- //   const [wallet, other, user1, user2, user3] = provider.getWallets()
+//   const [wallet, other, user1, user2, user3] = provider.getWallets()
 //   const loadFixture = createFixtureLoader([wallet])
 
 //   let farm: Contract
@@ -70,7 +70,7 @@ function* generateSequence(start: number, end: number) {
 //    _shareAPR: BigNumber.from("38580246913580246"),
 //     _shareAPRBase:BigNumber.from( "1000000000000000000000"),
 //     _minimumStake:expandTo18Decimals (1000),
-//     _cap: expandTo18Decimals(400000),
+//     _cap: expandTo18Decimals(4000),
 //     _totalShare: 20,
 //     _totalShareBase: 1,
 //   }
@@ -78,7 +78,7 @@ function* generateSequence(start: number, end: number) {
 //       _shareAPR: BigNumber.from("00003858"),
 //     _shareAPRBase: BigNumber.from( "1000000000000000000000"),
 //     _minimumStake: expandTo18Decimals(1000),
-//     _cap: expandTo18Decimals(600000),
+//     _cap: expandTo18Decimals(6000),
 //     _totalShare: 30,
 //     _totalShareBase: 1,
 //   }
@@ -138,21 +138,21 @@ function* generateSequence(start: number, end: number) {
 //     await nextNft.setApprovalForAll(farm.address, true)
 //     await RagNft.setApprovalForAll(farm.address, true)
 //     console.log(deadline-launchTime,'time inveriant');
-    
+
 //     const ragReward =await farm._calcReward(ragPoolDetails._cap,
 //       ragPoolDetails._shareAPR,
 //       ragPoolDetails._shareAPRBase,
-       
+
 //      2592000);
 //     console.log({ragReward});
 //     console.log(ragReward.toString(),'reward');
-    
+
 //   })
 
 //   it('checking launch time and deadline ', async () => {
 //     expect(await farm.launchTime()).to.eq(launchTime)
 //     expect(await farm.farmDeadline()).to.eq(deadline)
-    
+
 //   })
 
 //   // it('Only owner can add pools to farm ', async () => {
@@ -181,7 +181,7 @@ function* generateSequence(start: number, end: number) {
 //   //         startfiPoolDetails._totalShare,
 //   //         startfiPoolDetails._totalShareBase
 //   //       )
-//   //   ).to.not.be.reverted
+//   //   ).to.emit(farm,'PoolAdded')
 //   //   await expect(
 //   //     farm.addPool(
 //   //       startfiPool.address,
@@ -203,7 +203,7 @@ function* generateSequence(start: number, end: number) {
 //   //       nextPoolDetails._totalShare,
 //   //       nextPoolDetails._totalShareBase
 //   //     )
-//   //   ).to.not.be.reverted
+//   //   ).to.emit(farm,'PoolAdded')
 //   //   await expect(
 //   //     farm.addPool(
 //   //       RAGPool.address,
@@ -214,7 +214,7 @@ function* generateSequence(start: number, end: number) {
 //   //       ragPoolDetails._totalShare,
 //   //       ragPoolDetails._totalShareBase
 //   //     )
-//   //   ).to.not.be.reverted
+//   //   ).to.emit(farm,'PoolAdded')
 //   //   await expect(
 //   //     farm.addPool(
 //   //       testTokenPool.address,
@@ -255,7 +255,7 @@ function* generateSequence(start: number, end: number) {
 //   //           wallet.address,
 //   //           AddressZero
 //   //         )
-//   //     ).to.not.be.reverted
+//   //     ).to.emit(farm,'PoolAdded')
 //   //   }
 //   //   for await (let value of generateSequence(1, nextMax)) {
 //   //     await expect(
@@ -269,7 +269,7 @@ function* generateSequence(start: number, end: number) {
 //   //           wallet.address,
 //   //           nextPool.address
 //   //         )
-//   //     ).to.not.be.reverted
+//   //     ).to.emit(farm,'PoolAdded')
 //   //   }
 
 //   //   for await (let value of generateSequence(1, ragMax)) {
@@ -284,13 +284,13 @@ function* generateSequence(start: number, end: number) {
 //   //           wallet.address,
 //   //           AddressZero
 //   //         )
-//   //     ).to.not.be.reverted
+//   //     ).to.emit(farm,'PoolAdded')
 //   //   }
 
 //   //   const cap =
 //   //     vidalNFTDetails._priceInPoint.mul(vidalMax).add(nextNftDetails._priceInPoint.mul(
 //   //       nextMax).add(ragNftDetails._priceInPoint.mul(ragMax)));
-     
+
 //   //   expect(await farm.cap()).to.eq(cap)
 //   // })
 //   // it('user can stake or unstake before launch time ', async () => {
@@ -301,23 +301,20 @@ function* generateSequence(start: number, end: number) {
 
 //   //   await RAGPool.transfer(other.address,ragPoolDetails._cap)
 
-   
-
 //   //   await startfiPool.connect(other).approve(farm.address, startfiPoolDetails._cap)
 //   //   await expect(startfiPool.connect(user1).approve(farm.address, startfiPoolDetails._cap))
 //   //     .to.emit(startfiPool, 'Approval')
 //   //     .withArgs(user1.address, farm.address, startfiPoolDetails._cap)
-    
+
 //   //   await nextPool.connect(other).approve(farm.address, nextPoolDetails._cap)
-   
+
 //   //   await RAGPool.connect(other).approve(farm.address, ragPoolDetails._cap)
-   
-//   //   await expect(farm.connect(other).stake(startfiPool.address, startfiPoolDetails._cap)).to.not.be.reverted
-//   //   await expect(farm.connect(other).stake(nextPool.address, nextPoolDetails._cap)).to.not.be.reverted
-//   //   await expect(farm.connect(other).stake(RAGPool.address, ragPoolDetails._cap)).to.not.be.reverted
+
+//   //   await expect(farm.connect(other).stake(startfiPool.address, startfiPoolDetails._cap)).to.emit(farm,'Stake')
+//   //   await expect(farm.connect(other).stake(nextPool.address, nextPoolDetails._cap)).to.emit(farm,'Stake')
+//   //   await expect(farm.connect(other).stake(RAGPool.address, ragPoolDetails._cap)).to.emit(farm,'Stake')
 //   //    })
- 
-  
+
 //   // it('go in time to the fram end time , user can unstake , unstakeBatch or claim regardless the time as long as balalnce is enough ', async () => {
 //   //   await provider.send('evm_increaseTime', [launchTime])
 //   //   await provider.send('evm_mine', [])
@@ -325,7 +322,7 @@ function* generateSequence(start: number, end: number) {
 //   //   const reward = await farm.userRewards(other.address);
 //   //   console.log({reward});
 //   //   console.log(reward.toString());
-    
+
 //   //  })
 // })
 describe('Startfi Farm', () => {
@@ -356,7 +353,7 @@ Minimum staked amount 100 RAG
 how many token this pool can hold (What do you mean?)
 pool total share  of RSTFI in the whole farm 50%
  */
-   const [wallet, other, user1, user2, user3] = provider.getWallets()
+  const [wallet, other, user1, user2, user3] = provider.getWallets()
   const loadFixture = createFixtureLoader([wallet])
 
   let farm: Contract
@@ -368,24 +365,24 @@ pool total share  of RSTFI in the whole farm 50%
   let nextNft: Contract
   let RagNft: Contract
   const startfiPoolDetails = {
-   _shareAPR: BigNumber.from("38580246913580246"),
-    _shareAPRBase:BigNumber.from( "1000000000000000000000"),
-    _minimumStake:expandTo18Decimals (1000),
-    _cap: expandTo18Decimals(400000),
+    _shareAPR: BigNumber.from('38580246913580246'),
+    _shareAPRBase: BigNumber.from('1000000000000000000000'),
+    _minimumStake: expandTo18Decimals(1000),
+    _cap: expandTo18Decimals(4000),
     _totalShare: 20,
     _totalShareBase: 1,
   }
   const nextPoolDetails = {
-      _shareAPR: BigNumber.from("38580246913580246"),
-    _shareAPRBase: BigNumber.from( "1000000000000000000000"),
+    _shareAPR: BigNumber.from('38580246913580246'),
+    _shareAPRBase: BigNumber.from('1000000000000000000000'),
     _minimumStake: expandTo18Decimals(1000),
-    _cap: expandTo18Decimals(600000),
+    _cap: expandTo18Decimals(6000),
     _totalShare: 30,
     _totalShareBase: 1,
   }
   const ragPoolDetails = {
-    _shareAPR: BigNumber.from("38580246913580246"),
-    _shareAPRBase:BigNumber.from( "1000000000000000000000"),
+    _shareAPR: BigNumber.from('38580246913580246'),
+    _shareAPRBase: BigNumber.from('1000000000000000000000'),
     _minimumStake: expandTo18Decimals(100),
     _cap: expandTo18Decimals(10000),
     _totalShare: 30,
@@ -438,14 +435,11 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     await vidalnft.setApprovalForAll(farm.address, true)
     await nextNft.setApprovalForAll(farm.address, true)
     await RagNft.setApprovalForAll(farm.address, true)
-    console.log(startfiPoolDetails,'startfiPoolDetails');
-    
   })
 
   it('checking launch time and deadline ', async () => {
     expect(await farm.launchTime()).to.eq(launchTime)
     expect(await farm.farmDeadline()).to.eq(deadline)
-    
   })
 
   it('Only owner can add pools to farm ', async () => {
@@ -474,7 +468,7 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
           startfiPoolDetails._totalShare,
           startfiPoolDetails._totalShareBase
         )
-    ).to.not.be.reverted
+    ).to.emit(farm, 'PoolAdded')
     await expect(
       farm.addPool(
         startfiPool.address,
@@ -496,7 +490,7 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
         nextPoolDetails._totalShare,
         nextPoolDetails._totalShareBase
       )
-    ).to.not.be.reverted
+    ).to.emit(farm, 'PoolAdded')
     await expect(
       farm.addPool(
         RAGPool.address,
@@ -507,7 +501,7 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
         ragPoolDetails._totalShare,
         ragPoolDetails._totalShareBase
       )
-    ).to.not.be.reverted
+    ).to.emit(farm, 'PoolAdded')
     await expect(
       farm.addPool(
         testTokenPool.address,
@@ -548,7 +542,7 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
             wallet.address,
             AddressZero
           )
-      ).to.not.be.reverted
+      ).to.emit(farm, 'RewardAdded')
     }
     for await (let value of generateSequence(1, nextMax)) {
       await expect(
@@ -562,7 +556,7 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
             wallet.address,
             nextPool.address
           )
-      ).to.not.be.reverted
+      ).to.emit(farm, 'RewardAdded')
     }
 
     for await (let value of generateSequence(1, ragMax)) {
@@ -577,85 +571,85 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
             wallet.address,
             AddressZero
           )
-      ).to.not.be.reverted
+      ).to.emit(farm, 'RewardAdded')
     }
 
-    const cap =
-      vidalNFTDetails._priceInPoint.mul(vidalMax).add(nextNftDetails._priceInPoint.mul(
-        nextMax).add(ragNftDetails._priceInPoint.mul(ragMax)));
-    console.log(cap.toHexString(),'cap');
-    
+    const cap = vidalNFTDetails._priceInPoint
+      .mul(vidalMax)
+      .add(nextNftDetails._priceInPoint.mul(nextMax).add(ragNftDetails._priceInPoint.mul(ragMax)))
+    console.log(cap.toHexString(), 'cap')
+
     expect(await farm.cap()).to.eq(cap)
   })
   it('user can stake or unstake before launch time ', async () => {
     // distribute token between test accounts
-    await startfiPool.transfer(other.address, expandTo18Decimals (10000))
-    await startfiPool.transfer(user1.address, expandTo18Decimals (10000))
-    await startfiPool.transfer(user2.address, expandTo18Decimals (10000))
-    await startfiPool.transfer(user3.address, expandTo18Decimals (10000))
+    await startfiPool.transfer(other.address, expandTo18Decimals(10000))
+    await startfiPool.transfer(user1.address, expandTo18Decimals(10000))
+    await startfiPool.transfer(user2.address, expandTo18Decimals(10000))
+    await startfiPool.transfer(user3.address, expandTo18Decimals(10000))
 
-    await nextPool.transfer(other.address, expandTo18Decimals (10000))
-    await nextPool.transfer(user1.address, expandTo18Decimals (20000))
-    await nextPool.transfer(user2.address, expandTo18Decimals (20000))
-    await nextPool.transfer(user3.address, expandTo18Decimals (10000))
+    await nextPool.transfer(other.address, expandTo18Decimals(10000))
+    await nextPool.transfer(user1.address, expandTo18Decimals(20000))
+    await nextPool.transfer(user2.address, expandTo18Decimals(20000))
+    await nextPool.transfer(user3.address, expandTo18Decimals(10000))
 
-    await RAGPool.transfer(other.address, expandTo18Decimals (30000))
-    await RAGPool.transfer(user1.address, expandTo18Decimals (20000))
-    await RAGPool.transfer(user2.address, expandTo18Decimals (30000))
-    await RAGPool.transfer(user3.address, expandTo18Decimals (20000))
+    await RAGPool.transfer(other.address, expandTo18Decimals(30000))
+    await RAGPool.transfer(user1.address, expandTo18Decimals(20000))
+    await RAGPool.transfer(user2.address, expandTo18Decimals(30000))
+    await RAGPool.transfer(user3.address, expandTo18Decimals(20000))
 
     // approve
     let balance = await startfiPool.balanceOf(user1.address)
     let allownce = await startfiPool.allowance(user1.address, farm.address)
-   
 
-    await startfiPool.connect(other).approve(farm.address, expandTo18Decimals (1000))
-    await expect(startfiPool.connect(user1).approve(farm.address, expandTo18Decimals (2000)))
+    await startfiPool.connect(other).approve(farm.address, expandTo18Decimals(1000))
+    await expect(startfiPool.connect(user1).approve(farm.address, expandTo18Decimals(1000)))
       .to.emit(startfiPool, 'Approval')
-      .withArgs(user1.address, farm.address, expandTo18Decimals (2000))
-    // expect(await startfiPool.allowance(user1.address, farm.address)).to.eq(expandTo18Decimals (2000))
-    // allownce = await startfiPool.allowance(user1.address, farm.address)
-    // console.log(allownce.toNumber(),'allownce2');
+      .withArgs(user1.address, farm.address, expandTo18Decimals(1000))
+    await startfiPool.connect(user2).approve(farm.address, expandTo18Decimals(1000))
+    await startfiPool.connect(user3).approve(farm.address, expandTo18Decimals(1000))
 
-    await startfiPool.connect(user2).approve(farm.address, expandTo18Decimals (2000))
-    await startfiPool.connect(user3).approve(farm.address, expandTo18Decimals (1000))
+    await nextPool.connect(other).approve(farm.address, expandTo18Decimals(2000))
+    await nextPool.connect(user1).approve(farm.address, expandTo18Decimals(2000))
+    await nextPool.connect(user2).approve(farm.address, expandTo18Decimals(1000))
+    await nextPool.connect(user3).approve(farm.address, expandTo18Decimals(1000))
 
-    await nextPool.connect(other).approve(farm.address, expandTo18Decimals (1000))
-    await nextPool.connect(user1).approve(farm.address, expandTo18Decimals (1000))
-    await nextPool.connect(user2).approve(farm.address, expandTo18Decimals (1000))
-    await nextPool.connect(user3).approve(farm.address, expandTo18Decimals (1000))
+    await RAGPool.connect(other).approve(farm.address, expandTo18Decimals(3000))
+    await RAGPool.connect(user1).approve(farm.address, expandTo18Decimals(2000))
+    await RAGPool.connect(user2).approve(farm.address, expandTo18Decimals(3000))
+    await RAGPool.connect(user3).approve(farm.address, expandTo18Decimals(2000))
 
-    await RAGPool.connect(other).approve(farm.address, expandTo18Decimals (3000))
-    await RAGPool.connect(user1).approve(farm.address, expandTo18Decimals (2000))
-    await RAGPool.connect(user2).approve(farm.address, expandTo18Decimals (3000))
-    await RAGPool.connect(user3).approve(farm.address, expandTo18Decimals (2000))
-
-    await expect(farm.connect(other).stake(startfiPool.address, expandTo18Decimals (1000))).to.not.be.reverted
-    await expect(farm.connect(other).stake(nextPool.address, expandTo18Decimals (1000))).to.not.be.reverted
-    await expect(farm.connect(other).stake(RAGPool.address, expandTo18Decimals (3000))).to.not.be.reverted
+    await expect(farm.connect(other).stake(startfiPool.address, expandTo18Decimals(1000))).to.emit(farm, 'Stake')
+    await expect(farm.connect(other).stake(nextPool.address, expandTo18Decimals(2000))).to.emit(farm, 'Stake')
+    await expect(farm.connect(other).stake(RAGPool.address, expandTo18Decimals(3000))).to.emit(farm, 'Stake')
     await expect(farm.connect(other).unstake(RAGPool.address)).to.be.reverted
-    await expect(farm.connect(other).unStakeEarly(RAGPool.address)).to.not.be.reverted
-    await RAGPool.connect(other).approve(farm.address, expandTo18Decimals (3000))
+    await expect(farm.connect(other).unStakeEarly(RAGPool.address)).to.emit(farm, 'Unstake')
+    await RAGPool.connect(other).approve(farm.address, expandTo18Decimals(3000))
 
-    await expect(farm.connect(other).stake(RAGPool.address, expandTo18Decimals (3000))).to.not.be.reverted
+    await expect(farm.connect(other).stake(RAGPool.address, expandTo18Decimals(3000))).to.emit(farm, 'Stake')
 
     //   const test =await  farm.connect(user1).stake(startfiPool.address, expandTo18Decimals (2000))
     // console.log(test);
     await expect(
-      farm.connect(user1).stakeBatch([startfiPool.address, nextPool.address, RAGPool.address], [expandTo18Decimals(2000), expandTo18Decimals(1000), expandTo18Decimals(2000)])
-    ).to.not.be.reverted
+      farm
+        .connect(user1)
+        .stakeBatch(
+          [startfiPool.address, nextPool.address, RAGPool.address],
+          [expandTo18Decimals(1000), expandTo18Decimals(2000), expandTo18Decimals(2000)]
+        )
+    ).to.emit(farm, 'Stake')
 
-    // await expect(farm.connect(user1).stake(startfiPool.address, expandTo18Decimals (2000))).to.not.be.reverted
-    // await expect(farm.connect(user1).stake(nextPool.address, expandTo18Decimals (1000))).to.not.be.reverted
-    // await expect(farm.connect(user1).stake(RAGPool.address, expandTo18Decimals (2000))).to.not.be.reverted
+    // await expect(farm.connect(user1).stake(startfiPool.address, expandTo18Decimals (2000))).to.emit(farm,'Stake')
+    // await expect(farm.connect(user1).stake(nextPool.address, expandTo18Decimals (1000))).to.emit(farm,'Stake')
+    // await expect(farm.connect(user1).stake(RAGPool.address, expandTo18Decimals (2000))).to.emit(farm,'Stake')
 
-    await expect(farm.connect(user2).stake(startfiPool.address, expandTo18Decimals (2000))).to.not.be.reverted
-    await expect(farm.connect(user2).stake(nextPool.address, expandTo18Decimals (1000))).to.not.be.reverted
-    await expect(farm.connect(user2).stake(RAGPool.address, expandTo18Decimals (2000))).to.not.be.reverted
+    await expect(farm.connect(user2).stake(startfiPool.address, expandTo18Decimals(1000))).to.emit(farm, 'Stake')
+    await expect(farm.connect(user2).stake(nextPool.address, expandTo18Decimals(1000))).to.emit(farm, 'Stake')
+    await expect(farm.connect(user2).stake(RAGPool.address, expandTo18Decimals(3000))).to.emit(farm, 'Stake')
 
-    await expect(farm.connect(user3).stake(startfiPool.address, expandTo18Decimals (1000))).to.not.be.reverted
-    await expect(farm.connect(user3).stake(nextPool.address, expandTo18Decimals (1000))).to.not.be.reverted
-    await expect(farm.connect(user3).stake(RAGPool.address, expandTo18Decimals (2000))).to.not.be.reverted
+    await expect(farm.connect(user3).stake(startfiPool.address, expandTo18Decimals(1000))).to.emit(farm, 'Stake')
+    await expect(farm.connect(user3).stake(nextPool.address, expandTo18Decimals(1000))).to.emit(farm, 'Stake')
+    await expect(farm.connect(user3).stake(RAGPool.address, expandTo18Decimals(2000))).to.emit(farm, 'Stake')
   })
   it('go in time and calculate points , user can not unstake ', async () => {
     await provider.send('evm_increaseTime', [launchTime - blockBefore.timestamp - 100])
@@ -673,9 +667,9 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     if (blockBefore.timestamp > launchTime) {
       expect(await farm.userRewards(other.address)).to.not.eq(0)
     }
-    const rewards = await await farm.userRewards(other.address);
-    console.log(rewards,'rewardssssssss');
-    
+    const rewards = await await farm.userRewards(other.address)
+    console.log(rewards, 'rewardssssssss')
+
     console.log(blockBefore.timestamp, launchTime, deadline, 'blockBefore.timestamp')
     blockNumBefore = await provider.getBlockNumber()
     blockBefore = await provider.getBlock(blockNumBefore)
@@ -695,14 +689,12 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
       const otherRewards = await farm.userRewards(other.address)
       if (otherRewards >= vidalNFTDetails._priceInPoint) {
         console.log({ otherRewards })
-
-        await expect(
-          farm.connect(other).redeemAndClaim([startfiPool.address, nextPool.address, RAGPool.address], 2)
-        ).to.emit(farm, 'Transfer')
       }
-      await expect(
-        farm.connect(user1).redeemBatch([startfiPool.address, nextPool.address, RAGPool.address])
-      ).to.emit(farm, 'Transfer')
+      await expect(farm.connect(user1).redeemBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.emit(
+        farm,
+        'Redeem'
+      )
+      expect(await farm.connect(user3).redeem(RAGPool.address)).to.emit(farm, 'Redeem')
     }
     // await provider.send('evm_increaseTime', [launchTime + dayInSec])
     // await provider.send('evm_mine', [])
@@ -711,27 +703,81 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     // console.log(user1Test._totalRewards.toNumber(), 'user1 rewards 222222')
     // console.log(user1Test.currentBlock.toNumber(), 'user1 currentBlock 22222')
     // console.log(user1Test.timestamp.toNumber(), 'user1 timestamp 22222222')
-    let calc = await farm._calcReward(4, startfiPoolDetails._shareAPR, startfiPoolDetails._shareAPRBase, 172787)
-    console.log(calc.toNumber(), 'calc')
-
-    // // expect(await farm.userRewards(other.address)).to.eq(0);
-    // await provider.send('evm_increaseTime', [deadline])
-    // await provider.send('evm_mine', [])
-    expect(await farm.connect(user3).redeem(RAGPool.address)).to.emit(farm, 'Transfer')
+    // let calc = await farm._calcReward(4, startfiPoolDetails._shareAPR, startfiPoolDetails._shareAPRBase, 172787)
+    // console.log(calc.toNumber(), 'calc')
   })
-  
+
   it('go in time to the fram end time , user can unstake , unstakeBatch or claim regardless the time as long as balalnce is enough ', async () => {
     await provider.send('evm_increaseTime', [launchTime])
     await provider.send('evm_mine', [])
 
-        await expect(farm.connect(other).unstake(RAGPool.address)).to.be.not.reverted
-        await expect(farm.connect(other).unstakeBatch([startfiPool.address, nextPool.address])).to.be.not.reverted
-        await expect(farm.connect(user1).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.be.not.reverted
-        await expect(farm.connect(user2).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.be.not.reverted
-    await expect(farm.connect(user3).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.be.not.reverted
-      await expect(farm.connect(other).claim(5)).to.emit(farm, 'Transfer')
-      await expect(farm.connect(user1).claim(6)).to.emit(farm, 'Transfer')
-      await expect(farm.connect(user3).claim(7)).to.emit(farm, 'Transfer')
+    const othertestBlock = await farm.testBlock(other.address, RAGPool.address)
+    const otherReward = await farm.userRewards(other.address)
+    const user1Reward = await farm.userRewards(user1.address)
+    const user2Reward = await farm.userRewards(user2.address)
+    const user3Reward = await farm.userRewards(user3.address)
+    console.log({ othertestBlock })
+    console.log({ user3Reward })
+    console.log({ user2Reward })
+    console.log({ user1Reward })
+    console.log({ otherReward })
+    // let user1CalcRewards = await farm._calcReward(
+    //   expandTo18Decimals(1000),
+    //   startfiPoolDetails._shareAPR,
+    //   startfiPoolDetails._shareAPRBase,
 
-   })
+    //   2592000
+    // )
+    // console.log({ user1CalcRewards })
+
+    // user1CalcRewards = await farm._calcReward(
+    //   expandTo18Decimals(2000),
+    //   nextPoolDetails._shareAPR,
+    //   nextPoolDetails._shareAPRBase,
+
+    //   2592000
+    // )
+    // console.log({ user1CalcRewards })
+    // user1CalcRewards = await farm._calcReward(
+    //   expandTo18Decimals(2000),
+    //   ragPoolDetails._shareAPR,
+    //   ragPoolDetails._shareAPRBase,
+
+    //   2592000
+    // )
+    // console.log({ user1CalcRewards })
+  let  user1CalcRewards = await farm._calcReward(
+      expandTo18Decimals(5000),
+      ragPoolDetails._shareAPR,
+      ragPoolDetails._shareAPRBase,
+
+      2592000
+    )
+    console.log({ user1CalcRewards })
+
+    //  await expect(
+    //   farm.connect(other).redeemAndClaim([startfiPool.address, nextPool.address, RAGPool.address], 5)
+    // ).to.emit(farm, 'RewardClaimed')
+    await expect(farm.connect(other).unstake(RAGPool.address)).to.emit(farm, 'Unstake')
+    await expect(farm.connect(other).unstakeBatch([startfiPool.address, nextPool.address])).to.emit(farm, 'Unstake')
+    await expect(farm.connect(user1).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.emit(
+      farm,
+      'Unstake'
+    )
+    await expect(farm.connect(user2).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.emit(
+      farm,
+      'Unstake'
+    )
+    await expect(farm.connect(user3).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.emit(
+      farm,
+      'Unstake'
+    )
+    const otherBalance = await farm.balanceOf(other.address)
+    console.log({ otherBalance })
+    const user1Balance = await farm.balanceOf(user1.address)
+    console.log({ user1Balance })
+
+    // await expect(farm.connect(user1).claim(6)).to.emit(farm, 'RewardClaimed')
+    // await expect(farm.connect(user3).claim(7)).to.emit(farm, 'RewardClaimed')
+  })
 })
