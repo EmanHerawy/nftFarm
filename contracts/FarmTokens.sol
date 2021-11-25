@@ -131,7 +131,7 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
 
     function _mint(address account, uint256 amount) internal virtual override {
         // require(ERC20.totalSupply() + amount <= _cap, 'cap exceeded');
-        require(_mintedPoints + amount <= _cap, 'cap exceeded');
+        require(_mintedPoints + amount <= _cap, 'Mint: cap exceeded');
         _mintedPoints += amount;
         super._mint(account, amount);
     }
