@@ -11,12 +11,7 @@ contract StartfiFarm is UserPools {
         uint256 timeToRelease_
     ) FarmPools(launchTime_, deadline_, timeToRelease_) {}
 
-    /// @notice calculate user rewards at the call time ( between launchtime to deadline)
-    /// @param user user address
-    /// @return number of rewards
-    function userRewards(address user) external view returns (uint256) {
-        return _userRewards(user);
-    }
+ 
 
     /// @param user user address
     ///  @return  currentUserPools user's pool addresses
