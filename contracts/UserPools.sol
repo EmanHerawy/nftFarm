@@ -25,10 +25,7 @@ abstract contract UserPools is FarmPools {
     event Unstake(address indexed staker, address indexed pool, uint256 amount, uint256 timestamp);
     event Redeem(address indexed redeemer, address indexed pool, uint256 amount, uint256 timestamp);
 
-
-
-
-   /// @notice calculate user rewards at the call time ( between launchtime to deadline) in all user pools
+    /// @notice calculate user rewards at the call time ( between launchtime to deadline) in all user pools
     /// @param user user address
     /// @return _totalRewards number of rewards
     function userRewards(address user) external view returns (uint256 _totalRewards) {
@@ -39,15 +36,15 @@ abstract contract UserPools is FarmPools {
         }
     }
 
-    /// @notice calculate user rewards at the call time ( between launchtime to deadline) in a certain pool 
+    /// @notice calculate user rewards at the call time ( between launchtime to deadline) in a certain pool
     /// @param _user user address
     /// @param _token pool token address
     /// @return _totalRewards number of rewards
-    function userPoolReward(address _user,address _token) external view returns (uint256 _totalRewards) {
-         uint256 currentBlock = _farmDeadline > block.timestamp ? block.timestamp : _farmDeadline;
-             return _getUserRewards(_user, _token, currentBlock);
-        
+    function userPoolReward(address _user, address _token) external view returns (uint256 _totalRewards) {
+        uint256 currentBlock = _farmDeadline > block.timestamp ? block.timestamp : _farmDeadline;
+        return _getUserRewards(_user, _token, currentBlock);
     }
+
     function _calcReward(
         uint256 amount,
         uint256 shareAPR,
@@ -75,8 +72,6 @@ abstract contract UserPools is FarmPools {
 
         // (amount, stakeTime, lastRewardBlock) = userPools[user][token];
     }
-
- 
 
     function _getUserRewards(
         address _user,
@@ -136,22 +131,22 @@ abstract contract UserPools is FarmPools {
         return IERC20(_token).transfer(_user, amount);
     }
 
-    function _redeemPoint(address _user, address _token) internal returns (bool) {
+    function _redeemPoint(address _user, address _token) internal returns (bool redeemed) {
         require(_userToPools[_user].contains(_token), 'Non exist');
         uint256 lastRewardBlock = userPools[_user][_token].lastRewardBlock;
-        require(lastRewardBlock < _farmDeadline, 'All Points are redeemed');
-        uint256 currentBlock = _farmDeadline > block.timestamp ? block.timestamp : _farmDeadline;
-        uint256 userTotalRewards = _getUserRewards(_user, _token, currentBlock);
-        if (userTotalRewards > 0) {
-            userPools[_user][_token].lastRewardBlock = block.timestamp;
-            emit Redeem(_user, _token, userTotalRewards, block.timestamp);
+        if (lastRewardBlock < _farmDeadline) {
+            uint256 currentBlock = _farmDeadline > block.timestamp ? block.timestamp : _farmDeadline;
+            uint256 userTotalRewards = _getUserRewards(_user, _token, currentBlock);
+            if (userTotalRewards > 0) {
+                userPools[_user][_token].lastRewardBlock = block.timestamp;
+                emit Redeem(_user, _token, userTotalRewards, block.timestamp);
 
-            _mint(_user, userTotalRewards);
+                _mint(_user, userTotalRewards);
+                redeemed = true;
+            }
+
+            // emit event here
         }
-
-        // emit event here
-
-        return true;
     }
 
     function testBlock(address _user, address _token)

@@ -49,8 +49,8 @@ function* generateSequence(start: number, end: number) {
 // pool total share  of RSTFI in the whole farm 30%
 // RAG Pool:
 // Interest rate per second 0.0000385802 rSTFI  // 0.000038580246913580246
-// 10000*(1000000/25920000000)*(30*24*60*60)
-// 1000000
+// 10000*(10000/25920000000)*(30*24*60*60)
+// 10000
 // Minimum staked amount 100 RAG
 // how many token this pool can hold (What do you mean?)
 // pool total share  of RSTFI in the whole farm 50%
@@ -68,7 +68,7 @@ function* generateSequence(start: number, end: number) {
 //   let RagNft: Contract
 //   const startfiPoolDetails = {
 //    _shareAPR: BigNumber.from("38580246913580246"),
-//     _shareAPRBase:BigNumber.from( "1000000000000000000000"),
+//     _shareAPRBase:BigNumber.from( "10000"),
 //     _minimumStake:expandTo18Decimals (1000),
 //     _cap: expandTo18Decimals(4000),
 //     _totalShare: 20,
@@ -76,7 +76,7 @@ function* generateSequence(start: number, end: number) {
 //   }
 //   const nextPoolDetails = {
 //       _shareAPR: BigNumber.from("00003858"),
-//     _shareAPRBase: BigNumber.from( "1000000000000000000000"),
+//     _shareAPRBase: BigNumber.from( "10000"),
 //     _minimumStake: expandTo18Decimals(1000),
 //     _cap: expandTo18Decimals(6000),
 //     _totalShare: 30,
@@ -84,7 +84,7 @@ function* generateSequence(start: number, end: number) {
 //   }
 //   const ragPoolDetails = {
 //     _shareAPR: BigNumber.from("38580246913580246"),
-//     _shareAPRBase:BigNumber.from( "1000000000000000000000"),
+//     _shareAPRBase:BigNumber.from( "10000"),
 //     _minimumStake: expandTo18Decimals(100),
 //     _cap: expandTo18Decimals(10000),
 //     _totalShare: 30,
@@ -347,8 +347,8 @@ how many token this pool can hold (What do you mean?)
 pool total share  of RSTFI in the whole farm 30%
 RAG Pool:
 Interest rate per second 0.0000385802 rSTFI  // 0.000038580246913580246
-10000*(1000000/25920000000)*(30*24*60*60)
-1000000
+10000*(10000/25920000000)*(30*24*60*60)
+10000
 Minimum staked amount 100 RAG
 how many token this pool can hold (What do you mean?)
 pool total share  of RSTFI in the whole farm 50%
@@ -365,24 +365,24 @@ pool total share  of RSTFI in the whole farm 50%
   let nextNft: Contract
   let RagNft: Contract
   const startfiPoolDetails = {
-    _shareAPR: BigNumber.from('38580246913580246'),
-    _shareAPRBase: BigNumber.from('1000000000000000000000'),
+    _shareAPR: BigNumber.from('5898525'),
+    _shareAPRBase: BigNumber.from('10000000000'),
     _minimumStake: expandTo18Decimals(1000),
     _cap: expandTo18Decimals(4000),
     _totalShare: 20,
     _totalShareBase: 1,
   }
   const nextPoolDetails = {
-    _shareAPR: BigNumber.from('38580246913580246'),
-    _shareAPRBase: BigNumber.from('1000000000000000000000'),
+    _shareAPR: BigNumber.from('5898525'),
+    _shareAPRBase: BigNumber.from('10000000000'),
     _minimumStake: expandTo18Decimals(1000),
     _cap: expandTo18Decimals(6000),
     _totalShare: 30,
     _totalShareBase: 1,
   }
   const ragPoolDetails = {
-    _shareAPR: BigNumber.from('38580246913580246'),
-    _shareAPRBase: BigNumber.from('1000000000000000000000'),
+    _shareAPR: BigNumber.from('5898525'),
+    _shareAPRBase: BigNumber.from('10000000000'),
     _minimumStake: expandTo18Decimals(100),
     _cap: expandTo18Decimals(10000),
     _totalShare: 30,
@@ -721,6 +721,8 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     console.log({ user2Reward })
     console.log({ user1Reward })
     console.log({ otherReward })
+
+    
     // let user1CalcRewards = await farm._calcReward(
     //   expandTo18Decimals(1000),
     //   startfiPoolDetails._shareAPR,
@@ -755,9 +757,9 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     )
     console.log({ user1CalcRewards })
 
-    //  await expect(
-    //   farm.connect(other).redeemAndClaim([startfiPool.address, nextPool.address, RAGPool.address], 5)
-    // ).to.emit(farm, 'RewardClaimed')
+     await expect(
+      farm.connect(other).redeemAndClaim([startfiPool.address, nextPool.address, RAGPool.address], 5)
+    ).to.emit(farm, 'RewardClaimed')
     await expect(farm.connect(other).unstake(RAGPool.address)).to.emit(farm, 'Unstake')
     await expect(farm.connect(other).unstakeBatch([startfiPool.address, nextPool.address])).to.emit(farm, 'Unstake')
     await expect(farm.connect(user1).unstakeBatch([startfiPool.address, nextPool.address, RAGPool.address])).to.emit(
@@ -776,8 +778,9 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     console.log({ otherBalance })
     const user1Balance = await farm.balanceOf(user1.address)
     console.log({ user1Balance })
-
-    // await expect(farm.connect(user1).claim(6)).to.emit(farm, 'RewardClaimed')
-    // await expect(farm.connect(user3).claim(7)).to.emit(farm, 'RewardClaimed')
+    const total = await farm.totalSupply();
+    console.log({total});
+    await expect(farm.connect(user1).claim(6)).to.emit(farm, 'RewardClaimed')
+    await expect(farm.connect(user3).claim(7)).to.emit(farm, 'RewardClaimed')
   })
 })
