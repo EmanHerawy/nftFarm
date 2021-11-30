@@ -42,7 +42,7 @@ abstract contract UserPools is FarmPools {
     /// @return _totalRewards number of rewards
     function userPoolReward(address _user, address _token) external view returns (uint256 _totalRewards) {
         uint256 currentBlock = _farmDeadline > block.timestamp ? block.timestamp : _farmDeadline;
-        return _getUserRewards(_user, _token, currentBlock);
+        _totalRewards= _getUserRewards(_user, _token, currentBlock);
     }
 
     function _calcReward(
@@ -88,7 +88,7 @@ abstract contract UserPools is FarmPools {
     }
 
     function _getUserPools(address user) internal view returns (address[] memory currentUserPools) {
-        return _userToPools[user].values();
+        currentUserPools= _userToPools[user].values();
     }
 
     function _stake(
@@ -149,20 +149,6 @@ abstract contract UserPools is FarmPools {
         }
     }
 
-    function testBlock(address _user, address _token)
-        public
-        view
-        returns (
-            uint256 lastRewardBlock,
-            uint256 currentBlock,
-            uint256 rewardBlocks
-        )
-    {
-        lastRewardBlock = userPools[_user][_token].lastRewardBlock;
-        currentBlock = _farmDeadline > block.timestamp ? block.timestamp : _farmDeadline;
-
-        rewardBlocks = currentBlock - lastRewardBlock;
-    }
 
     function _claimReward(uint256 key, address _user) internal virtual override returns (bool) {
         uint256 minimumStakeRequired = rewardTokens[key].minimumStakeRequired;

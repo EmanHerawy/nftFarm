@@ -711,12 +711,10 @@ Rage Fan(RAG): Cap 50% = $10,000 USD = 1,000,000 rSTFI
     await provider.send('evm_increaseTime', [launchTime])
     await provider.send('evm_mine', [])
 
-    const othertestBlock = await farm.testBlock(other.address, RAGPool.address)
     const otherReward = await farm.userRewards(other.address)
     const user1Reward = await farm.userRewards(user1.address)
     const user2Reward = await farm.userRewards(user2.address)
     const user3Reward = await farm.userRewards(user3.address)
-    console.log({ othertestBlock })
     console.log({ user3Reward })
     console.log({ user2Reward })
     console.log({ user1Reward })

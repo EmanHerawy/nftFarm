@@ -117,7 +117,7 @@ contract FarmPools is FarmTokens {
     }
 
     function getPoolByIndex(uint256 index) external view returns (address poolAddress) {
-        return _poolsSet.at(index);
+        poolAddress= _poolsSet.at(index);
     }
 
     function getPoolDetails(address _token)
