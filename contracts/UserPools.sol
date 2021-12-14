@@ -25,7 +25,7 @@ abstract contract UserPools is FarmPools {
     event Unstake(address indexed staker, address indexed pool, uint256 amount, uint256 timestamp);
     event Redeem(address indexed redeemer, address indexed pool, uint256 amount, uint256 timestamp);
 
-    /// @notice calculate user rewards at the call time ( between launchtime to deadline) in all user pools
+    /// @notice calculate user rewards at the call time ( between launchtime (or last redeem time) to deadline) in all user pools
     /// @param user user address
     /// @return _totalRewards number of rewards
     function userRewards(address user) external view returns (uint256 _totalRewards) {
