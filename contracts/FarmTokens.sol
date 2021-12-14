@@ -45,6 +45,26 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         return _mintedPoints;
     }
 
+    function rewardTokenDetails(uint256 _id)
+        external
+        view
+        returns (
+            address _nftAddress,
+            address _owner,
+            uint256 _tokenId,
+            uint256 _priceInPoint,
+            uint256 _minimumStakeRequired,
+            address _tokenLinked
+        )
+    {
+        _nftAddress = rewardTokens[_id].nftAddress;
+        _owner = rewardTokens[_id].owner;
+        _tokenId = rewardTokens[_id].tokenId;
+        _priceInPoint = rewardTokens[_id].priceInPoint;
+        _minimumStakeRequired = rewardTokens[_id].minimumStakeRequired;
+        _tokenLinked = rewardTokens[_id].tokenLinked;
+    }
+
     function cap() external view returns (uint256) {
         return _cap;
     }
@@ -62,9 +82,9 @@ contract FarmTokens is Ownable, ERC20, ERC721Holder, ReentrancyGuard {
         address _nftAddress,
         address owner_,
         address _tokenLinked
-    ) internal onlyOwner  virtual{
+    ) internal virtual onlyOwner {
         require(_priceInPoint != 0 && _nftAddress != address(0) && owner_ != address(0), 'Zero values not allowed');
-     
+
         require(
             IERC721(_nftAddress).getApproved(_tokenId) == address(this) ||
                 IERC721(_nftAddress).isApprovedForAll(owner_, address(this)),
