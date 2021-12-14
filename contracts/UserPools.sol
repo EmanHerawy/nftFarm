@@ -50,7 +50,7 @@ abstract contract UserPools is FarmPools {
         uint256 shareAPR,
         uint256 baseAPR,
         uint256 rewardBlocks
-    ) public pure returns (uint256) {
+    ) private pure returns (uint256) {
         // get the rate e.g. who much points for x amount stake in y pool
         uint256 rate = amount * (shareAPR.divideDecimal(baseAPR * 100));
         // multiply in duration to get the reward now since the the staking time

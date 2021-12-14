@@ -102,17 +102,17 @@ console.log(owner,'owner');
     await vidalnft.setApprovalForAll(farm.address, true)
 
   
-//  const test = await farm .addPool(
-//           startfiPool.address,
-//           startfiPoolDetails._shareAPR,
-//           startfiPoolDetails._shareAPRBase,
-//           startfiPoolDetails._minimumStake,
-//           startfiPoolDetails._cap,
-//           startfiPoolDetails._totalShare,
-//           startfiPoolDetails._totalShareBase
-//         )
+ const test = await farm .addPool(
+          startfiPool.address,
+          startfiPoolDetails._shareAPR,
+          startfiPoolDetails._shareAPRBase,
+          startfiPoolDetails._minimumStake,
+          startfiPoolDetails._cap,
+          startfiPoolDetails._totalShare,
+          startfiPoolDetails._totalShareBase
+        )
  
-//   console.log({test});
+  console.log({test});
 await farm.addPool(
     RAGPool.address,
     ragPoolDetails._shareAPR,
