@@ -95,6 +95,8 @@ matic: {
         url: `https://eth-ropsten.alchemyapi.io/v2/${alchemyKey}`,
         saveDeployments: true,
         accounts: [privateKey],
+          gasPrice: 120 * 1000000000
+
       },
       mainnet: {
         url: `https://eth-mainnet.alchemyapi.io/v2/${alchemyKey}`,

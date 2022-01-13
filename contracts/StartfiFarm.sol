@@ -39,15 +39,15 @@ contract StartfiFarm is UserPools {
         return _userPoolDetails(user, token);
     }
 
-    // ony before launch time
-    /// @notice let user to stake tokens in a certain pool
-    /// @dev ony before launch time
-    /// @param _token pool token address
-    /// @param _amount user stakes to be added to this pool
+    // // ony before launch time
+    // /// @notice let user to stake tokens in a certain pool
+    // /// @dev ony before launch time
+    // /// @param _token pool token address
+    // /// @param _amount user stakes to be added to this pool
 
-    function stake(address _token, uint256 _amount) external {
-        require(_stake(_msgSender(), _token, _amount), 'Invalid stake operation');
-    }
+    // function stake(address _token, uint256 _amount) external {
+    //     require(_stake(_msgSender(), _token, _amount), 'Invalid stake operation');
+    // }
 
     // ony before launch time
     /// @notice let user to stake in maltible pools in a single transaction
@@ -95,26 +95,26 @@ contract StartfiFarm is UserPools {
         }
     }
 
-    /// @notice users call this functions any time to redeem points for their pool stakes
-    /// @dev : calling this function mints point for the caller based on the reward algorithm applied
-    /// @dev only staker can call it
+    // /// @notice users call this functions any time to redeem points for their pool stakes
+    // /// @dev : calling this function mints point for the caller based on the reward algorithm applied
+    // /// @dev only staker can call it
 
-    /// @param _token pool token address
+    // /// @param _token pool token address
 
-    function redeem(address _token) external {
-        require(_redeemPoint(_msgSender(), _token), 'Invalid redeem operation');
-    }
+    // function redeem(address _token) external {
+    //     require(_redeemPoint(_msgSender(), _token), 'Invalid redeem operation');
+    // }
 
     //
-    /// @notice When the fram ends, users can set their stakes free by calling this function
-    /// @dev only after deadline
-    /// @dev only staker can call it
+    // /// @notice When the fram ends, users can set their stakes free by calling this function
+    // /// @dev only after deadline
+    // /// @dev only staker can call it
 
-    /// @param _token pool token address
+    // /// @param _token pool token address
 
-    function unstake(address _token) external {
-        require(_unstake(_msgSender(), _token), 'Invalid unstake operation');
-    }
+    // function unstake(address _token) external {
+    //     require(_unstake(_msgSender(), _token), 'Invalid unstake operation');
+    // }
 
     /// @notice Let user unstake token from many pools at once
     /// @dev only staker can call it
@@ -126,14 +126,14 @@ contract StartfiFarm is UserPools {
         }
     }
 
-    /// @notice before the farm starts, users can set their stakes free by calling this function
-    /// @dev only before launchtime
-    /// @dev only staker can call it
+    // /// @notice before the farm starts, users can set their stakes free by calling this function
+    // /// @dev only before launchtime
+    // /// @dev only staker can call it
 
-    /// @param _token pool token address
-    function unStakeEarly(address _token) external {
-        require(_unstakeEarly(_msgSender(), _token), 'Invalid stake operation');
-    }
+    // /// @param _token pool token address
+    // function unStakeEarly(address _token) external {
+    //     require(_unstakeEarly(_msgSender(), _token), 'Invalid stake operation');
+    // }
 
     /// @notice before the farm starts, Let user unstake token from many pools at once
     /// @dev only before launchtime

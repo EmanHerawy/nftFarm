@@ -34,11 +34,11 @@ console.log(owner,'owner');
   const Farm = await hre.ethers.getContractFactory("StartfiFarm");
   const anyERc20 = await hre.ethers.getContractFactory("AnyERC20");
   const anyERc721 = await hre.ethers.getContractFactory("AnyERC721");
-    const farm = await Farm.attach("0x35f2033B9322b8774A04b3aeCd20647965c0300b");
+  const farm = await Farm.attach("0x6f2219716998131D01ef901B0ec2C7224dA6E4b9");
     const nextPool = await anyERc20.attach("0x86c4386c4cb3C9F196d22c4C541f9767E8400D93");
     const RAGPool = await anyERc20.attach("0x84f5eF55d070999D28d44a35E44938A3D32E0Fcf");
-    const startfiPool = await anyERc20.attach("0x3D8D620cba5dd3e9a6d4648bC5fEcE42ac3e07dF");
-    const vidalnft = await anyERc721.attach("0x1B89dc8F482b12eB738fB440f4195f2D9ed87d29");
+  const startfiPool = await anyERc20.attach("0x4e85a1047860733a74a24db836c8e6878945185d");
+  const vidalnft = await anyERc721.attach("0xB87056037974887A8D045fe84aCf2DEb6ff9Ac0A");
  
   const user1 = owner //"0x7e33ca6d5fe6a06ae484E81262ACB74919Dc25fb"
 

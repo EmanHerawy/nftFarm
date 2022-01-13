@@ -46,7 +46,7 @@ module.exports = async ({ getNamedAccounts, deployments, network }) => {
   const vidalMax = 1
   const nextMax = 3
   const ragMax = 10
-  const launchTime = 1639409512 + dayInSec * 5 // after 5 days from now
+  const launchTime = 1642069400 + dayInSec * 5 // after 5 days from now
   const deadline = launchTime + dayInSec * 30
   const releaseTime = deadline + dayInSec * 50
  
